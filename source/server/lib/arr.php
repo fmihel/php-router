@@ -1,23 +1,32 @@
 <?php
 namespace fmihel\router\lib;
 
+use Exception;
+
 class ARR {
     public static function is_assoc($array){
+        $result = false;
+        try{
         
-        return count(array_filter(array_keys($array), 'is_string')) > 0;
+            $result  = ( count(array_filter(array_keys($array), 'is_string')) > 0 );
+        
+        }catch(\Exception $e){
+                
+        }
+        return $result;
     }
     
     public static function extend($a = array(), $b = array()){
         
         if ((is_array($a)) && (is_array($b))) {
             $res = array();
-            if (is_assoc($a)) {
+            if (self::is_assoc($a)) {
                 foreach ($a as $k => $v) {
                     if (!isset($b[$k])) {
                         $res[$k] = $v;
                     } else {
                         if ((is_array($v)) && (is_array($b[$k]))) {
-                            $res[$k] = extend($v, $b[$k]);
+                            $res[$k] = self::extend($v, $b[$k]);
                         } else {
                             $res[$k] = $b[$k];
                         }

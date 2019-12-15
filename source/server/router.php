@@ -1,6 +1,8 @@
 <?php
 namespace fmihel\router;
 use fmihel\router\lib\{DIR,ARR};
+
+
 require_once __DIR__. '\route.php';
 require_once __DIR__. '\lib\dir.php';
 require_once __DIR__. '\lib\arr.php';
@@ -24,7 +26,7 @@ class Router{
     /**
      * добавляем модуль
      * @param string|object $obj - либо моудль Route, либо файл с классом , либо папка с файлами (от текущего папки "./")
-     * @param string $type all | pretest   - all - вставляет все найденные,pretest - предварительно проверяет есть ли класс Route внутри
+     * @param string $test all | pretest    all - вставляет все найденные,pretest - предварительно проверяет есть ли класс Route внутри
      * @param string $scan depth | self  - глубина сканирования
      */
     public function add($obj,$test='pretest',$scan='depth'){
@@ -46,7 +48,7 @@ class Router{
                     $check = (preg_match($re,$cont)===1);
                 };
                 
-                if (($test==='declare')||($check)){
+                if (($test==='all')||($check)){
                     
                     $prev = get_declared_classes();
                     include_once ($obj);
@@ -63,6 +65,14 @@ class Router{
                     $this->add($file,$test);
             }                
         }    
+    }
+    
+    public function loadFromFile($fileName){
+        // need release
+    }
+
+    public function saveToFile($fileName){
+        // need release
     }
 
     /**
