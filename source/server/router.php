@@ -7,12 +7,12 @@ require_once __DIR__. '\route.php';
 require_once __DIR__. '\lib\dir.php';
 require_once __DIR__. '\lib\arr.php';
 
+define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
+
 /**
  * Осуществляет распределение запросов, между отдельными модулями route
  */
-
-define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
-class Router{
+final class Router{
     
     public $routers=array();
     public $pack = false;
@@ -74,14 +74,17 @@ class Router{
     public function saveToFile($fileName){
         // need release
     }
-
+    /** проверка, на то что это запрос от router.js */
+    public function isRouting(){
+        return isset($this->REQUEST['fmihel_router_data']);
+    }
     /**
      * обрабатываем входные данные
      */
     public function init(){
         try{
             
-            $this->pack = $this->REQUEST;
+            $this->pack = $this->REQUEST['fmihel_router_data'];
         
         }catch(\Exception $e){
             error_log($e->getMessage());

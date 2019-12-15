@@ -1,7 +1,7 @@
 
 class Router {
     constructor() {
-        this.host = '/';
+        this.host = window.location.href;
     }
 
     ajax(o) {
@@ -14,7 +14,7 @@ class Router {
                 method: 'POST',
             }, o);
 
-            const pack = { id: p.id, data: p.data };
+            const pack = {fmihel_router_data:{ id: p.id, data: p.data }};
 
             $.ajax({
                 url: p.url,
