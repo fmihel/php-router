@@ -36,10 +36,10 @@
     $(()=>{
         $('#send').on("click",()=>{
             
-            router.ajax({
+            router({
                 id:'test_send',
                 data:"test data",
-                url:'http://php-router/example/simple/handler.php'
+                url:'handler.php'
 
             })
             .then(o=>{

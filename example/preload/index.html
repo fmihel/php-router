@@ -1,16 +1,3 @@
-
-<?php
-require_once '..\..\source\server\router.php';
-
-$router = new \fmihel\router\Router();
-
-if ($router->isRouting()){
-    
-    $router->add('modules/');
-    $router->run();
-
-}else{
-?>        
 <!doctype html>
 
 <html lang="en">
@@ -35,6 +22,7 @@ if ($router->isRouting()){
             <div class="col" style="min-height:48px;padding:10px">
                 <button id="send1">send1</button>
                 <button id="send2">send2</button>
+                <button id="send3">send3</button>
             </div>
         </div>
     </div>    
@@ -46,7 +34,8 @@ if ($router->isRouting()){
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script type="module" src="../../source/client/router.js" ></script>
     <script type="module">
-       import {router} from '../../source/client/router.js';
+    
+    import {router} from '../../source/client/router.js';
     
     $(()=>{
 
@@ -54,7 +43,7 @@ if ($router->isRouting()){
             
             router({
                 id:'test_send1',
-                data:"test data",
+                data:"test data 1",
 
             })
             .then(o=>{
@@ -69,7 +58,22 @@ if ($router->isRouting()){
             
             router({
                 id:'test_send2',
-                data:"test data",
+                data:"test data 2",
+
+            })
+            .then(o=>{
+                console.log(o);
+            })
+            .catch(e=>{
+                console.error(e);
+            });
+        });
+
+        $('#send3').on("click",()=>{
+            
+            router({
+                id:'test_send3',
+                data:"test data 3",
 
             })
             .then(o=>{
@@ -87,5 +91,3 @@ if ($router->isRouting()){
   
 </body>
 </html>
-
-<?php }; ?>

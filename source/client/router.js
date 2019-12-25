@@ -4,7 +4,7 @@ class Router {
         this.host = window.location.href;
     }
 
-    ajax(o) {
+    send(o) {
         return new Promise((ok, err) => {
             const p = $.extend(false, {
                 id: -1,
@@ -55,5 +55,14 @@ class Router {
         });
     }
 }
+const _Router = new Router();
 
-export const router = new Router();
+export function router(send=undefined){
+    if (send){
+        return _Router.send(send);
+    }else
+        return _Router;    
+};
+
+
+
