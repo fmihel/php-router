@@ -1,11 +1,12 @@
 <?php
 namespace fmihel\router;
-use fmihel\router\lib\{DIR,ARR};
+use fmihel\router\lib\{DIR,ARR, Events};
 
 
 require_once __DIR__. '\route.php';
 require_once __DIR__. '\lib\dir.php';
 require_once __DIR__. '\lib\arr.php';
+require_once __DIR__. '\lib\events.php';
 
 define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
 
@@ -22,22 +23,31 @@ final class Router{
     
     private $files = []; // список используемых файлов
     private $loadingFromCache = false;
+    private $events = null;
+
     private $param = [
-        'cache'   =>true,         // будет ли попытка загрузить классы из предварительно сохраненного списка файлов fileName
+        'cache'   =>true,           // будет ли попытка загрузить классы из предварительно сохраненного списка файлов fileName
         'fileName'  =>'router.dat', // имя предварительно созданного файла со списком модулей
         'add'       =>[],           // список фалов или путей к подгрузке 
-        'main'      =>'index.html',   // файл выгрузки, в случае если запрос не адресован к роутору
+        'main'      =>'index.html', // файл выгрузки, в случае если запрос не адресован к роутору
         'suspend'   =>true,         // если true то запуск будет через конструктор
+        
+        'onBefore'  =>[],           // список событий сразу по приходу сообщения
+        'onAfter'   =>[]            // список событий после обработки, сразу перед отправкой
     ];
 
     function __construct($param=[]){
 
         $this->REQUEST = $_REQUEST;
+        $this->events = new Events;
 
         $selfPath = dirname($_SERVER['SCRIPT_FILENAME']).'/';
         $this->param['fileName']    = $selfPath.$this->param['fileName']; // имя предварительно созданного файла
         $this->param['main']        = $selfPath.$this->param['main']; // файл выгрузки, в случае если запрос не адресован к роутору
         $this->param = array_merge($this->param,$param);
+        
+        $this->on(  'before', $this->param['onBefore']  );
+        $this->on(  'after',  $this->param['onAfter']   );
 
         if (!$this->param['suspend']) 
             return $this->handler();
@@ -86,6 +96,7 @@ final class Router{
             $this->routers[] = ['object'=>$obj];
 
         }elseif(($type==='string') && (!$this->loadingFromCache)){
+            $obj = trim($obj);
             $isFile = (!is_dir($obj));
 
             if ($isFile){
@@ -135,6 +146,7 @@ final class Router{
                     throw new \Exception('file_get_contents("'.$fileName.'") = false');
                     
                 $list = explode("\n",file_get_contents($fileName));
+                
                 foreach($list as $fileName)
                     $this->add($fileName);
                 $this->loadingFromCache = true;    
@@ -166,6 +178,25 @@ final class Router{
     public function isRouting(){
         return isset($this->REQUEST['fmihel_router_data']);
     }
+
+    /** 
+     * регистрация события
+    */
+    public function on($event,$callback){
+        if (gettype($callback) === 'array'){
+            foreach($callback as $cb)
+                $this->on($event,$cb);
+        }else
+            $this->events->add($event,$callback);
+    }
+
+    /** 
+     * выполнение всех коллбеков для события event
+    */
+    private function do($event,&$params){
+        return $this->events->do($event,$params);
+    }
+
     /**
      * обрабатываем входные данные
      */
@@ -234,7 +265,21 @@ final class Router{
         try{
             if (!$this->pack)
                 throw new \Exception('no data');
+
+            // ----------------------------------------------------------------------------            
+            //$pack = $this->pack;
+            $evResult = $this->do('before',$this->pack);
             
+            if ($evResult!==true){
+                $this->return = Route::typeError(
+                    gettype($evResult)!=='string' ? 'php:before ret false for '.$this->pack['id'] : $evResult,
+                    0,
+                    gettype($evResult)!=='string'?$evResult:null
+                );
+                return;    
+            }
+            // ----------------------------------------------------------------------------            
+
             for($i=0;$i<count($this->routers);$i++){
                 
                 $route = $this->getObject($this->routers[$i]);
@@ -249,7 +294,7 @@ final class Router{
                     
                     if ($object->$method($this->pack['data'])){
                         $this->return = $object->return;
-                        return true;
+                        return;
                     }
 
                 }
@@ -262,12 +307,23 @@ final class Router{
             error_log($e->getMessage());
             $this->return =  false; 
         }
-        return false;
+        return;
     }
     /**
      * возвращаем информацию
      */
     private function response(){
+        
+        // ----------------------------------------------------------------------------            
+        $evResult = $this->do('after',$this->return);
+        if ($evResult!==true){
+            $this->return = Route::typeError(
+                gettype($evResult)!=='string' ? 'php:after ret false for '.$this->pack['id'] : $evResult,
+                0,
+                gettype($evResult)!=='string'?$evResult:null
+            );
+        }
+        // ----------------------------------------------------------------------------            
         
         $res = json_encode(array('pack'=>$this->return));
         echo $res;

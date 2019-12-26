@@ -35,9 +35,25 @@
     <script type="module" src="../../source/client/router.js" ></script>
     <script type="module">
     
-    import {router} from '../../source/client/router.js';
+    import router from '../../source/client/router.js';
     
+    var session={
+        enable:true,
+        token:1,
+    }
+    
+    router()
+    .on('before',(data)=>{
+        console.log('before',data);
+        data.session = session;
+    })
+    .on('after', (data) =>{
+        console.log('after',data);
+    })
+
     $(()=>{
+
+
 
         $('#send1').on("click",()=>{
             

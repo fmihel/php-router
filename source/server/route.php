@@ -11,11 +11,11 @@ class Route{
         $this->return = $data;
         return true;
     }
-    public function ok($data=array(),$res=1){
+    public function ok($data=[],$res=1){
         $this->return = self::typeOk($data,$res);
         return true;
     }
-    public function error($msg,$res=0,$data=array()){
+    public function error($msg,$res=0,$data=[]){
         $this->return = self::typeError($msg,$res,$data);
         return true;    
     }
@@ -26,14 +26,16 @@ class Route{
         
     }
 
-    static public function typeError($msg='',$res=0,$data=array()){
-        $error = array('msg'=>$msg,'res'=>$res);
-        if ($data!==array())
-            $error=$data;
+    static public function isError($res){
+        return (($res) && (isset($res['res'])) && ($res['res']<=0));
+    }
+
+    static public function typeError($msg='',$res=0,$data=[]){
+        $error = array('msg'=>$msg,'res'=>$res,'data'=>$data);
         return $error;
     }
 
-    static public function typeOk($data=array(),$res=1){
+    static public function typeOk($data=[],$res=1){
         return array('res'=>$res,'data'=>$data);
     }
 
