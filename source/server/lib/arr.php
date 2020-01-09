@@ -3,7 +3,7 @@ namespace fmihel\router\lib;
 
 use Exception;
 
-class ARR {
+class Arr {
     public static function is_assoc($array){
         $result = false;
         try{

@@ -1,12 +1,11 @@
 <?php
 namespace fmihel\router;
-use fmihel\router\lib\{DIR,ARR, Events};
+use fmihel\router\lib\{Dir, Events};
 
 
-require_once __DIR__. '\route.php';
-require_once __DIR__. '\lib\dir.php';
-require_once __DIR__. '\lib\arr.php';
-require_once __DIR__. '\lib\events.php';
+require_once __DIR__. '/Route.php';
+require_once __DIR__. '/lib/Dir.php';
+require_once __DIR__. '/lib/Events.php';
 
 define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
 
@@ -124,7 +123,7 @@ final class Router{
                     };
                 };
             }else{
-                $files = DIR::files($obj,'php',true,($scan!=='depth'));
+                $files = Dir::files($obj,'php',true,($scan!=='depth'));
                 foreach($files as $file)
                     $this->add($file,$test);
             }                

@@ -3,7 +3,7 @@ namespace fmihel\router\lib;
 
 define('_DIR_SEPARATOR','/');
 
-class DIR{
+class Dir{
     
     static function slash($dir,$left,$right){
         if (trim($dir)=='') return '';
