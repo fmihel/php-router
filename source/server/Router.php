@@ -59,7 +59,7 @@ final class Router{
         if ($this->isRouting()){
             $this->param = array_merge($this->param,$param);
             
-            $load_ok = false;
+            $load_ok = true;
             if ($this->param['cache'])
                 $load_ok = $this->loadFromFile();
         
@@ -68,7 +68,7 @@ final class Router{
             
             $this->run();
 
-            if ( (!$this->param['cache']) || (!$load_ok) )
+            if ( ($this->param['cache']) && (!$load_ok) )
                 $this->saveToFile();
 
             return true;    
