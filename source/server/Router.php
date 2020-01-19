@@ -26,7 +26,7 @@ final class Router{
 
     private $param = [
         'cache'   =>true,           // будет ли попытка загрузить классы из предварительно сохраненного списка файлов fileName
-        'fileName'  =>'router.dat', // имя предварительно созданного файла со списком модулей
+        'fileName'  =>'router_paths.php', // имя предварительно созданного файла со списком модулей
         'add'       =>[],           // список фалов или путей к подгрузке 
         'main'      =>'index.html', // файл выгрузки, в случае если запрос не адресован к роутору
         'suspend'   =>true,         // если true то запуск будет через конструктор
@@ -140,14 +140,10 @@ final class Router{
         
             if (file_exists($fileName)){
 
-                $list = file_get_contents($fileName);
-                if ($list === false)
-                    throw new \Exception('file_get_contents("'.$fileName.'") = false');
-                    
-                $list = explode("\n",file_get_contents($fileName));
-                
-                foreach($list as $fileName)
+                include $fileName;
+                foreach($modules as $fileName)
                     $this->add($fileName);
+                    
                 $this->loadingFromCache = true;    
                 
                 return true;
@@ -161,11 +157,15 @@ final class Router{
 
     public function saveToFile($fileName = false){
         try {
-
             if (!$fileName)
                 $fileName = $this->param['fileName'];
+            $php = '';
+            $cr = "\n";
+            foreach($this->files as $file){
+                $php.="    '".$file."',".$cr;  
+            };
 
-            return (file_put_contents($fileName,implode("\n",$this->files))!==false);
+            return (file_put_contents($fileName, '<?php'.$cr.'$modules=['.$cr.$php.'];'.$cr.'?>' )!==false);
             
         } catch (\Exception $e) {
             error_log('Exception ['.__FILE__.':'.__LINE__.'] '.$e->getMessage());

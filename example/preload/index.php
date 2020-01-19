@@ -30,7 +30,7 @@ function after2(&$param){
 new \fmihel\router\Router([
     'add'       =>['modules/'],
     'suspend'   =>false,
-    'cache'     =>true,
+    'cache'     =>false,
     'onBefore'  =>'before1',
     'onAfter'   =>['after1','after2']
 
