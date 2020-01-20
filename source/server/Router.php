@@ -270,11 +270,24 @@ final class Router{
             $evResult = $this->do('before',$this->pack);
             
             if ($evResult!==true){
+                $typeResult = gettype($evResult);
+                if ($typeResult === 'string')
+                    $this->return = Route::typeError($evResult,0,null);
+                else if ($typeResult === 'array')
+                    $this->return = Route::typeError(
+                        isset($evResult['msg'])?$evResult['msg']:'php:before ret false for '.$this->pack['id'],
+                        isset($evResult['res'])?$evResult['res']:0,
+                        isset($evResult['data'])?$evResult['data']:null
+                    );
+                else
+                    $this->return = Route::typeError('php:before ret false for '.$this->pack['id'],0,null);
+
+                /*
                 $this->return = Route::typeError(
                     gettype($evResult)!=='string' ? 'php:before ret false for '.$this->pack['id'] : $evResult,
                     0,
                     gettype($evResult)!=='string'?$evResult:null
-                );
+                );*/
                 return;    
             }
             // ----------------------------------------------------------------------------            
