@@ -1,4 +1,3 @@
-
 class Router {
     constructor() {
         this.host = window.location.href;

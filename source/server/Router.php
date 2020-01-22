@@ -1,10 +1,9 @@
 <?php
 namespace fmihel\router;
-use fmihel\router\lib\{Dir, Events};
-
+use fmihel\router\lib\{Events};
+use fmihel\lib\Dir;
 
 require_once __DIR__. '/Route.php';
-require_once __DIR__. '/lib/Dir.php';
 require_once __DIR__. '/lib/Events.php';
 
 define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
