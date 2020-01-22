@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "fmihel\\router\\": "source/server"
+            "fmihel\\router\\": "source"
         }
     },
     "autoload-dev": {
@@ -28,6 +28,6 @@
 
     },
     "require": {
-        "fmihel/php-lib": "^0.0.1"
+        "fmihel/php-lib": "^0.1.0"
     }
 }

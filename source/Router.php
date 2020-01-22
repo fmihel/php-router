@@ -1,10 +1,11 @@
 <?php
 namespace fmihel\router;
-use fmihel\router\lib\{Events};
-use fmihel\lib\Dir;
 
 require_once __DIR__. '/Route.php';
-require_once __DIR__. '/lib/Events.php';
+
+use fmihel\lib\{Dir,Events};
+
+
 
 define('ROUTE_CLASS_NAME','fmihel\\router\\Route');
 
@@ -24,7 +25,7 @@ final class Router{
     private $events = null;
 
     private $param = [
-        'cache'   =>true,           // будет ли попытка загрузить классы из предварительно сохраненного списка файлов fileName
+        'cache'     =>false,        // будет ли попытка загрузить классы из предварительно сохраненного списка файлов fileName
         'fileName'  =>'router_paths.php', // имя предварительно созданного файла со списком модулей
         'add'       =>[],           // список фалов или путей к подгрузке 
         'main'      =>'index.html', // файл выгрузки, в случае если запрос не адресован к роутору
