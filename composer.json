@@ -28,6 +28,6 @@
 
     },
     "require": {
-        "fmihel/php-lib": "dev-master"
+        "fmihel/php-lib": "^0.3.0"
     }
 }

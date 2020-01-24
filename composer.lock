@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a2f03be494732255b77738ad7989ccb",
+    "content-hash": "4f6b4a31f30b8e5b2085e028d2fb1bce",
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "dev-master",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
@@ -1563,9 +1563,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fmihel/php-lib": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
