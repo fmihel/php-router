@@ -2,10 +2,17 @@
 namespace fmihel\router;
 
 class Route{
-    public $pack = false;
-    public $return = array();
-    public $id      = 1;
-    public $data = array();
+    public $routeParam = [
+        'pack'      =>false,
+        'return'    =>[],
+        'id'        =>1,
+        'data'      =>[]
+    ];
+    
+    //public $pack = false;
+    //public $return = array();
+    //public $id      = 1;
+    //public $data = array();
     
     public function result($data){
         $this->return = $data;

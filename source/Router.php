@@ -300,12 +300,15 @@ final class Router{
                     $object = $route['object'];
                     $method = $route['method'];
 
-                    $object->pack    = $this->pack;
-                    $object->id      = $this->pack['id'];
-                    $object->data    = $this->pack['data'];
+                    //$object->pack    = $this->pack;
+                    //$object->id      = $this->pack['id'];
+                    //$object->data    = $this->pack['data'];
+                    $object->routeParam['pack']    = $this->pack;
+                    $object->routeParam['id']      = $this->pack['id'];
+                    $object->routeParam['data']    = $this->pack['data'];
                     
                     if ($object->$method($this->pack['data'])){
-                        $this->return = $object->return;
+                        $this->return = $object->routeParam['return'];
                         return;
                     }
 
