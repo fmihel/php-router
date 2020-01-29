@@ -300,9 +300,6 @@ final class Router{
                     $object = $route['object'];
                     $method = $route['method'];
 
-                    //$object->pack    = $this->pack;
-                    //$object->id      = $this->pack['id'];
-                    //$object->data    = $this->pack['data'];
                     $object->routeParam['pack']    = $this->pack;
                     $object->routeParam['id']      = $this->pack['id'];
                     $object->routeParam['data']    = $this->pack['data'];
@@ -318,9 +315,7 @@ final class Router{
             $this->return = Route::typeError('No defined handler module for ['.$this->pack['id'].']');
     
         }catch(\Exception $e){
-            
-            error_log($e->getMessage());
-            $this->return =  false; 
+            $this->return = Route::typeError($e->getMessage());            
         }
         return;
     }
