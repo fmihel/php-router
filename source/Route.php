@@ -15,19 +15,19 @@ class Route{
     //public $data = array();
     
     public function result($data){
-        $this->return = $data;
+        $this->routeParam['return'] = $data;
         return true;
     }
     public function ok($data=[],$res=1){
-        $this->return = self::typeOk($data,$res);
+        $this->routeParam['return'] = self::typeOk($data,$res);
         return true;
     }
     public function error($msg,$res=0,$data=[]){
-        $this->return = self::typeError($msg,$res,$data);
+        $this->routeParam['return'] = self::typeError($msg,$res,$data);
         return true;    
     }
     public function is($id){
-        return ($id === $this->id);
+        return ($id === $this->routeParam['id']);
     }
     public function request(){
         
@@ -45,7 +45,6 @@ class Route{
     static public function typeOk($data=[],$res=1){
         return array('res'=>$res,'data'=>$data);
     }
-
     
 }
 ?>
