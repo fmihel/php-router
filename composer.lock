@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "v0.4.0",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
-                "reference": "53e702c081a247b6f063ebe281f78c40afeabddb"
+                "reference": "0362ab460b45aeed87f91877a2dd7b51aa0267f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/53e702c081a247b6f063ebe281f78c40afeabddb",
-                "reference": "53e702c081a247b6f063ebe281f78c40afeabddb",
+                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/0362ab460b45aeed87f91877a2dd7b51aa0267f9",
+                "reference": "0362ab460b45aeed87f91877a2dd7b51aa0267f9",
                 "shasum": ""
             },
             "require-dev": {
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "php,lib,library",
-            "time": "2020-01-28T13:00:39+00:00"
+            "time": "2020-02-06T10:32:18+00:00"
         }
     ],
     "packages-dev": [
