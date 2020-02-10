@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eff87a499dae00b2f9a968272c0e7767",
+    "content-hash": "7f01bb2362a0a4ad64cc5db74384e873",
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "v0.5.0",
+            "version": "v0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
-                "reference": "32bb9c14eea4720348b93d270b469e5faff635de"
+                "reference": "e0e6578bb83d28eb9ec61422075aacb9fb2fc8da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/32bb9c14eea4720348b93d270b469e5faff635de",
-                "reference": "32bb9c14eea4720348b93d270b469e5faff635de",
+                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/e0e6578bb83d28eb9ec61422075aacb9fb2fc8da",
+                "reference": "e0e6578bb83d28eb9ec61422075aacb9fb2fc8da",
                 "shasum": ""
             },
             "require-dev": {
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "php,lib,library",
-            "time": "2020-02-10T06:09:00+00:00"
+            "time": "2020-02-10T07:00:35+00:00"
         }
     ],
     "packages-dev": [
