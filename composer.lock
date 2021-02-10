@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
-                "reference": "6576513641c045e067da4e9cf49b8494948ef03e"
+                "reference": "7abffdfc36c6eaab51b7b60cd43f2060a2e030f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/6576513641c045e067da4e9cf49b8494948ef03e",
-                "reference": "6576513641c045e067da4e9cf49b8494948ef03e",
+                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/7abffdfc36c6eaab51b7b60cd43f2060a2e030f6",
+                "reference": "7abffdfc36c6eaab51b7b60cd43f2060a2e030f6",
                 "shasum": ""
             },
             "require-dev": {
@@ -41,7 +41,7 @@
                 }
             ],
             "description": "php,lib,library",
-            "time": "2021-02-05T10:14:41+00:00"
+            "time": "2021-02-10T11:13:10+00:00"
         }
     ],
     "packages-dev": [
