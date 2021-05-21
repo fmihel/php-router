@@ -302,12 +302,22 @@ final class Router{
 
                     $object->routeParam['pack']    = $this->pack;
                     $object->routeParam['id']      = $this->pack['id'];
+                    /*
                     $object->routeParam['data']    = $this->pack['data'];
                     
                     if ($object->$method($this->pack['data'])){
                         $this->return = $object->routeParam['return'];
                         return;
                     }
+                    */
+                    $data = isset($this->pack['data'])?$this->pack['data']:null;
+                    $object->routeParam['data']    = $data;
+
+                    if ($object->$method($data)){
+                        $this->return = $object->routeParam['return'];
+                        return;
+                    }
+
 
                 }
             };
