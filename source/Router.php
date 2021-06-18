@@ -32,7 +32,8 @@ final class Router{
         'suspend'   =>true,         // если true то запуск будет через конструктор
         
         'onBefore'  =>[],           // список событий сразу по приходу сообщения
-        'onAfter'   =>[]            // список событий после обработки, сразу перед отправкой
+        'onAfter'   =>[],           // список событий после обработки, сразу перед отправкой
+        'onException'=>[],          // передача объекта Exception внутреннему обработчику, для внутренних целей ( к примеру для вывода в лог)
     ];
 
     function __construct($param=[]){
@@ -47,6 +48,7 @@ final class Router{
         
         $this->on(  'before', $this->param['onBefore']  );
         $this->on(  'after',  $this->param['onAfter']   );
+        $this->on(  'exception',  $this->param['onException']   );
 
         if (!$this->param['suspend']) 
             return $this->handler();
@@ -325,6 +327,7 @@ final class Router{
             $this->return = Route::typeError('No defined handler module for ['.$this->pack['id'].']');
     
         }catch(\Exception $e){
+            $this->do('exception',$e);
             $this->return = Route::typeError($e->getMessage());            
         }
         return;
