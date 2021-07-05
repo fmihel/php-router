@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
-                "reference": "911c02e500f6e5d9eeca9a9adbdef41308839eb6"
+                "reference": "b4647d4290aa2e008d8a8cce5e13e55db76461df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/911c02e500f6e5d9eeca9a9adbdef41308839eb6",
-                "reference": "911c02e500f6e5d9eeca9a9adbdef41308839eb6",
+                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/b4647d4290aa2e008d8a8cce5e13e55db76461df",
+                "reference": "b4647d4290aa2e008d8a8cce5e13e55db76461df",
                 "shasum": ""
             },
             "require-dev": {
@@ -43,9 +43,9 @@
             "description": "php,lib,library",
             "support": {
                 "issues": "https://github.com/fmihel/php-lib/issues",
-                "source": "https://github.com/fmihel/php-lib/tree/v2.0.0"
+                "source": "https://github.com/fmihel/php-lib/tree/v2.1.0"
             },
-            "time": "2021-06-22T08:16:09+00:00"
+            "time": "2021-07-02T13:44:45+00:00"
         }
     ],
     "packages-dev": [
@@ -811,16 +811,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.5.16",
+            "version": "8.5.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "cc66f2fc61296be66c99931a862200e7456b9a01"
+                "reference": "79067856d85421c56d413bd238d4e2cd6b0e54da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/cc66f2fc61296be66c99931a862200e7456b9a01",
-                "reference": "cc66f2fc61296be66c99931a862200e7456b9a01",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/79067856d85421c56d413bd238d4e2cd6b0e54da",
+                "reference": "79067856d85421c56d413bd238d4e2cd6b0e54da",
                 "shasum": ""
             },
             "require": {
@@ -892,7 +892,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.16"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.17"
             },
             "funding": [
                 {
@@ -904,7 +904,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-05T04:46:20+00:00"
+            "time": "2021-06-23T05:12:43+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -1530,7 +1530,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-11-30T07:30:19+00:00"
         },
         {
