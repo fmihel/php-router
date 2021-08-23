@@ -337,20 +337,27 @@ final class Router{
      */
     private function response(){
         
-        // ----------------------------------------------------------------------------            
-        $evResult = $this->do('after',$this->return);
-        if ($evResult!==true){
-            $this->return = Route::typeError(
-                gettype($evResult)!=='string' ? 'php:after ret false for '.$this->pack['id'] : $evResult,
-                0,
-                gettype($evResult)!=='string'?$evResult:null
-            );
-        }
-        // ----------------------------------------------------------------------------            
-        
-        $res = json_encode(array('pack'=>$this->return));
-        echo $res;
+        try{
+            // ----------------------------------------------------------------------------            
+            $evResult = $this->do('after',$this->return);
+            if ($evResult!==true){
+                $this->return = Route::typeError(
+                    gettype($evResult)!=='string' ? 'php:after ret false for '.$this->pack['id'] : $evResult,
+                    0,
+                    gettype($evResult)!=='string'?$evResult:null
+                );
+            }
+            // ----------------------------------------------------------------------------            
+            $res = json_encode(array('pack'=>$this->return));
+            // ----------------------------------------------------------------------------            
+            if (!$res)
+                throw new \Exception('json_encode = false, use only utf8 coding for response messages');
+            echo $res;
 
+        }catch(\Exception $e){
+            $this->do('exception',$e);
+            echo json_encode( ['pack'=>Route::typeError($e->getMessage())]);            
+        }
     }
     public function run(){
         $this->init();
