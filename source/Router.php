@@ -211,6 +211,12 @@ final class Router{
             $this->pack = false;
         }
     }
+    /** проверка, что имя класс принадлежит указанному пространству имен  */
+    private function inNamespace($namespace,$className){
+        
+        return empty($namespace) || (strpos($className,$namespace)===0) ;
+    }
+
     /**
      * @return false | ['object'=>obj,'method'=>'name']
      */
@@ -224,7 +230,7 @@ final class Router{
             $className = $route['class'];
         }
         
-        if ($className){
+        if ($className && $this->inNamespace($this->pack['namespace'],$className)){
 
             $eventMethods = [
                     strtoupper('ajax'.$this->pack['id']),
