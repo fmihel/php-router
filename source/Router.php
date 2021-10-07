@@ -106,7 +106,7 @@ final class Router{
 
                     if ($test==='pretest'){
                         $cont = file_get_contents($obj);
-                        $re = '/class\s+[\s\S]+extends\s+\S*Route/m';
+                        $re = '/^\s*class\s+\S+\s+extends\s+Route/m';
                         $check = (preg_match($re,$cont)===1);
                     
                     };
