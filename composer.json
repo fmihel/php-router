@@ -20,6 +20,6 @@
         }
     },
     "require": {
-        "fmihel/php-lib": "^3.0.0"
+        "fmihel/php-lib": "^4.0"
     }
 }

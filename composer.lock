@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38f4ff4be3ee541b6eb5ccd7db988ecb",
+    "content-hash": "2bad1350d7ff1d75a4ab16ddfbcfc651",
     "packages": [
         {
             "name": "fmihel/php-lib",
-            "version": "v3.0.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fmihel/php-lib.git",
-                "reference": "fe47f368af01477cc7daf43f954803e12f428069"
+                "reference": "4de8c15eb4af42029493e72ddcb15ddc05c2d8e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/fe47f368af01477cc7daf43f954803e12f428069",
-                "reference": "fe47f368af01477cc7daf43f954803e12f428069",
+                "url": "https://api.github.com/repos/fmihel/php-lib/zipball/4de8c15eb4af42029493e72ddcb15ddc05c2d8e0",
+                "reference": "4de8c15eb4af42029493e72ddcb15ddc05c2d8e0",
                 "shasum": ""
             },
             "require-dev": {
@@ -43,9 +43,9 @@
             "description": "php,lib,library",
             "support": {
                 "issues": "https://github.com/fmihel/php-lib/issues",
-                "source": "https://github.com/fmihel/php-lib/tree/v3.0.0"
+                "source": "https://github.com/fmihel/php-lib/tree/v4.0.0"
             },
-            "time": "2022-04-30T19:06:54+00:00"
+            "time": "2022-10-18T07:53:06+00:00"
         }
     ],
     "packages-dev": [],
@@ -56,5 +56,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
