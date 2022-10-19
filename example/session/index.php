@@ -1,17 +1,12 @@
 <?php
 require_once __DIR__.'/../../source/router.php';
+require_once __DIR__.'/session/session.php';
 use fmihel\router;
 
-function onBefore($pack){
-    error_log(print_r($pack,true));
-    return $pack;
-}
 
 
 if (router::enabled()){
     try{
-        router::on('before','onBefore');
-
         router::init([
             'root'=>__DIR__,
         ]);

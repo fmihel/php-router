@@ -3,37 +3,45 @@
   <head>
     <title>simple</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script type='module' src="http://work/fmihel/router/php-router-client/source/router.js" ></script>
-    <script type='module' src="./session.js" ></script>
+    
+    <!--script type='module' src="http://work/fmihel/router/php-router-client/source/router.js" ></script-->
+    <!--script type='module' src="./session.js" ></script-->
+
   </head>
   <body style="background: #000C18;color:gray">
     <button id="autorize">autorize</button>
     <button id="send">send</button>
+    <button id="logout">logout</button>
     <script type="module">
+       
        import router from 'http://work/fmihel/router/php-router-client/source/router.js';
-        
+       import session from "./session.js";
 
         $(()=>{
 
             $('#autorize').on('click',()=>{
-                router.send({
-                    to:'session',
-                    data:'from router'
-                }).then(data=>{
-                    console.log(data);
-                })
-            })
+                session.autorize('1')
+                    .then((enable)=>{
+                        console.log('autorize',session);
+                    })
+            });
 
             $('#send').on('click',()=>{
                 router.send({
-                    to:'session',
-                    data:'error'
+                    to:'mod',
+                    data:'data from client'
                 }).then(data=>{
                     console.log(data);
                 }).catch(e=>{
-                    console.log(e);
+                    console.log(e.message);
                 })
-            })
+            });
+
+            $('#logout').on('click',()=>{
+                session.logout().then(()=>{
+                    console.log('logout',session);
+                })
+            });
 
         });
 

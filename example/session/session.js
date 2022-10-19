@@ -2,20 +2,35 @@ import router from 'http://work/fmihel/router/php-router-client/source/router.js
 
 class Session{
     constructor(){
-        this.id = 'HHSJKDL';
+        this.enable = false;
+        this.id = undefined;
         this.onRouterBefore = this.onRouterBefore.bind(this);
-        this.onRouterAfter = this.onRouterAfter.bind(this);
     }
     onRouterBefore(pack){
-
         return {
             ...pack,
             session:{id:this.id}
         };
 
     }
-    onRouterAfter(pack){
+    autorize(pass){
+        return router.send({
+            to:'session/autorize',
+            data:{pass}
+        })
+        .then(({enable,id})=>{
+            this.enable = (enable == 1);
+            this.id     = id;
+            return this.enable;
+        });
+    }
+    logout(){
+        this.enable = false;
+        this.id = undefined;
 
+        return router.send({
+            to:'session/logout',
+        });
     }
 }
 
