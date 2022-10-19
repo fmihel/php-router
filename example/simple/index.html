@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>simple</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script type='module' src="http://work/fmihel/router/php-router-client/source/router.js" ></script>
+  </head>
+  <body style="background: #000C18;color:gray">
+    <button id="send">send</button>
+    <button id="error">error</button>
+    <script type="module">
+       import router from 'http://work/fmihel/router/php-router-client/source/router.js';
+    
+        $(()=>{
+
+            $('#send').on('click',()=>{
+                router.send({
+                    to:'mod',
+                    data:'from router'
+                }).then(data=>{
+                    console.log(data);
+                })
+            })
+
+            $('#error').on('click',()=>{
+                router.send({
+                    to:'mod',
+                    data:'error'
+                }).then(data=>{
+                    console.log(data);
+                }).catch(e=>{
+                    console.log(e);
+                })
+            })
+
+        });
+
+    </script>
+</body>
+</html>
