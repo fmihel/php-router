@@ -26,10 +26,11 @@ class router {
     static private $enable = null;
     static private $id = 'router';
     
-    static private $all     = null;
+    static private $pack     = null;
     static public $data     = [];
-    static public $path  = '';    
-    static private $events = ['onAfter'=>[],'onBefore'=>[]];
+    static public $path     = '';    
+
+    static private $events = ['after'=>[],'before'=>[]];
     static private $root = __DIR__;
     
 
@@ -39,19 +40,21 @@ class router {
            
             $params = array_merge([
                 'root'      =>__DIR__,
-                'onBefore'  =>false,
-                'onAfter'   =>false,
+                'before'  =>false,
+                'after'   =>false,
             ],$params);
 
-            self::$data       = self::$all[self::$id]['data'];
-            self::$path       = self::$all[self::$id]['to'];
+            self::$data       = self::$pack['data'];
+            self::$path       = self::$pack['to'];
+            
+
             self::$root       = $params['root'];
         
-            if ($params['onAfter'])
-                self::addEvent('onAfter',$params['onAfter']);
+            if ($params['after'])
+                self::on('after',$params['after']);
 
-            if ($params['onBefore'])
-                self::addEvent('onBefore',$params['onBefore']);
+            if ($params['before'])
+                self::on('before',$params['before']);
 
             return true;
         };
@@ -61,9 +64,12 @@ class router {
     
     public static function module(){
         
-        self::$data = self::doEvent('onBefore',self::$data);
+        self::$pack = self::doEvent('before',self::$pack);
+        $module_name = self::$root.'/'.self::$path.'.php';
+        if (!file_exists($module_name))
+            self::error('module not exist '.$module_name);
+        return $module_name;
 
-        return self::$root.'/'.self::$path.'.php';
         
     }
     
@@ -79,12 +85,13 @@ class router {
     }
 
     public static function out($data){
-        $data = self::doEvent('onAfter',$data);
-        echo json_encode([ 'res'=>1 , 'data' => $data ]);         
+        self::$pack['data'] = $data;
+        self::$pack = self::doEvent('after',self::$pack);
+        echo json_encode(array_merge([ 'res'=>1 ],self::$pack));         
         exit;
     }
     
-    public static function addEvent($ev,$callback){
+    public static function on($ev,$callback){
         if (!array_key_exists($ev,self::$events))
             throw new \Exception("event ".$ev.' is not event of router ');
             
@@ -92,20 +99,23 @@ class router {
         
     }
     
-    private static function doEvent($ev,$data){
+    private static function doEvent($ev,$pack){
         if (!array_key_exists($ev,self::$events))
             throw new \Exception("event ".$ev.' is not event of router ');
             
         foreach(self::$events[$ev] as $callback){
-                $data = $callback($data);
+                $pack = $callback($pack);
         };
-        return $data;
+        return $pack;
     }
     private static function _tryLoad(){
         
         if (self::$enable === null){
-            self::$all  = json_decode(trim(file_get_contents("php://input")),true);
-            self::$enable = self::$all && isset(self::$all[self::$id]);
+            $input  = json_decode(trim(file_get_contents("php://input")),true);
+            if ($input && isset($input[self::$id])){
+                self::$enable = true;
+                self::$pack = $input[self::$id];
+            };
         };
 
         return self::$enable;

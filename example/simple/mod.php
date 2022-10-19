@@ -6,4 +6,4 @@ if (router::$data === 'error'){
 }else
     error_log(print_r(router::$data,true));
     
-router::out([]);
+router::out('out from mod.php');
