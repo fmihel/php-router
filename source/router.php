@@ -2,6 +2,9 @@
 
 namespace fmihel;
 
+use fmihel\router\RouterRules;
+require_once __DIR__.'/iRouterRule.php';
+
 /* ----------------------------------------------
 Example for use:
 //-----------------------------------------------
@@ -32,7 +35,8 @@ class router {
 
     static private $events = ['after'=>[],'before'=>[]];
     static private $root = __DIR__;
-    
+
+    static private $rules = [];
 
     public static function init($params=[]){
 
@@ -40,8 +44,9 @@ class router {
            
             $params = array_merge([
                 'root'      =>__DIR__,
-                'before'  =>false,
-                'after'   =>false,
+                'before'    =>false,
+                'after'     =>false,
+                'rules'     =>[]
             ],$params);
 
             self::$data       = self::$pack['data'];
@@ -56,18 +61,31 @@ class router {
             if ($params['before'])
                 self::on('before',$params['before']);
 
+            self::$rules  = array_merge(self::$rules,$params['rules']);
+
             return true;
         };
         
         return false;
     }
+
     
     public static function module(){
         
         self::$pack = self::doEvent('before',self::$pack);
-        $module_name = self::$root.'/'.self::$path.'.php';
+        
+        $find = false;
+        foreach(self::$rules as $rule){
+            $find = $rule->adapt(self::$root,self::$path);
+            if ($find)
+                break;
+        };
+        
+        $module_name = $find ? $find : self::$root.'/'.self::$path.'.php';
+        
         if (!file_exists($module_name))
             self::error('module not exist '.$module_name);
+
         return $module_name;
 
         
@@ -126,6 +144,11 @@ class router {
             self::_tryLoad();
         }
         return self::$enable;
+    }
+
+    
+    public static function addRule($rule){
+        self::$rules[] = $rule;
     }
     
     
