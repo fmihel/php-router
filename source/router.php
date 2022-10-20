@@ -2,9 +2,6 @@
 
 namespace fmihel;
 
-use fmihel\router\RouterRules;
-require_once __DIR__.'/iRouterRule.php';
-
 /* ----------------------------------------------
 Example for use:
 //-----------------------------------------------
@@ -34,16 +31,16 @@ class router {
     static public $path     = '';    
 
     static private $events = ['after'=>[],'before'=>[]];
-    static private $root = __DIR__;
+    static private $root = '';
 
-    static private $rules = [];
+    static private $rules = []; // [ 'from/path'=>'to/path',callback($root,$path):string || undef  ]
 
     public static function init($params=[]){
 
         if (self::_tryLoad()){
            
             $params = array_merge([
-                'root'      =>__DIR__,
+                'root'      =>pathinfo($_SERVER['SCRIPT_FILENAME'])['dirname'], 
                 'before'    =>false,
                 'after'     =>false,
                 'rules'     =>[]
@@ -68,20 +65,41 @@ class router {
         
         return false;
     }
-
     
+
+    private static function calcModuleName($rules,$root,$path){
+        
+        $find = false;
+        for($i = 0;$i<count($rules);$i++){
+            
+            $rule = $rules[$i];
+            $type = gettype($rule);
+
+            if ($type === 'array'){ 
+                foreach($rule as $from=>$to){
+                    if ($path === $from){
+                        $find = $to;
+                        break;
+                     };
+                };
+                
+            }elseif($type === 'string' || $type === 'object'){
+                $find = $rule($root,$path);
+            };
+            
+            if ($find) break;
+        };
+
+
+        return self::addPhpExt($find ? $find : self::join($root,$path));
+    }
+
+
     public static function module(){
         
         self::$pack = self::doEvent('before',self::$pack);
         
-        $find = false;
-        foreach(self::$rules as $rule){
-            $find = $rule->adapt(self::$root,self::$path);
-            if ($find)
-                break;
-        };
-        
-        $module_name = $find ? $find : self::$root.'/'.self::$path.'.php';
+        $module_name = self::calcModuleName(self::$rules,self::$root,self::$path);
         
         if (!file_exists($module_name))
             self::error('module not exist '.$module_name);
@@ -150,6 +168,32 @@ class router {
     public static function addRule($rule){
         self::$rules[] = $rule;
     }
+
+    public static function join(...$paths){
+        $root = ':\\';
+        $rootKey = '<%ROOT%>';
+        $out = str_replace($root,$rootKey,join('/',$paths));
+        
+        $out = explode('/',$out);
+        $out = array_filter($out, function($value) { return !is_null($value) && $value !== ''; });
+        
+        $other = [];
+        foreach($out as $a){
+            $a = explode('\\',$a);
+            $other = array_merge($other,array_filter($a, function($value) { return !is_null($value) && $value !== ''; }));
+        }
+        $out = $other;
+        
+        $out = join('/',$out);
+        $out = str_replace($rootKey,$root,$out);
+
+        return $out;
+    }
     
+    private static function addPhpExt($path){
+        $path = trim($path);
+        $pos = strrpos(strtolower($path),'.php');
+        return ($pos === strlen($path)-4) ? $path : $path.'.php';    
+    }
     
 }
