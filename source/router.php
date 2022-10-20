@@ -65,36 +65,13 @@ class router {
         
         return false;
     }
+
+    public static function done($data=[]){
+        self::out($data);
+    }
     
 
-    private static function calcModuleName($rules,$root,$path){
-        
-        $find = false;
-        for($i = 0;$i<count($rules);$i++){
-            
-            $rule = $rules[$i];
-            $type = gettype($rule);
-
-            if ($type === 'array'){ 
-                foreach($rule as $from=>$to){
-                    if ($path === $from){
-                        $find = $to;
-                        break;
-                     };
-                };
-                
-            }elseif($type === 'string' || $type === 'object'){
-                $find = $rule($root,$path);
-            };
-            
-            if ($find) break;
-        };
-
-
-        return self::addPhpExt($find ? $find : self::join($root,$path));
-    }
-
-
+    /** возвращает имя модуля к которому идет обращение от клиента */
     public static function module(){
         
         self::$pack = self::doEvent('before',self::$pack);
@@ -105,13 +82,9 @@ class router {
             self::error('module not exist '.$module_name);
 
         return $module_name;
-
         
     }
     
-    public static function done($data=[]){
-        self::out($data);
-    }
     
     public static function error($e){
         
@@ -125,6 +98,13 @@ class router {
         self::$pack = self::doEvent('after',self::$pack);
         echo json_encode(array_merge([ 'res'=>1 ],self::$pack));         
         exit;
+    }
+    /** возвращает признак, что в скрипт передана информация для роутинга */
+    public static function enabled():bool{
+        if (self::$enable === null){
+            self::_tryLoad();
+        }
+        return self::$enable;
     }
     
     public static function on($ev,$callback){
@@ -157,18 +137,39 @@ class router {
         return self::$enable;
     }
 
-    public static function enabled(){
-        if (self::$enable === null){
-            self::_tryLoad();
-        }
-        return self::$enable;
+    /** расчет имени маршрута с учетом добавленных пользователей */
+    private static function calcModuleName($rules,$root,$path){
+        
+        $find = false;
+        for($i = 0;$i<count($rules);$i++){
+            
+            $rule = $rules[$i];
+            $type = gettype($rule);
+
+            if ($type === 'array'){ 
+                foreach($rule as $from=>$to){
+                    if ($path === $from){
+                        $find = $to;
+                        break;
+                     };
+                };
+                
+            }elseif($type === 'string' || $type === 'object'){
+                $find = $rule($root,$path);
+            };
+            
+            if ($find) break;
+        };
+
+
+        return self::addPhpExt($find ? $find : self::join($root,$path));
     }
 
     
     public static function addRule($rule){
         self::$rules[] = $rule;
     }
-
+    /** конкатенация имен маршрутов */
     public static function join(...$paths){
         $root = ':\\';
         $rootKey = '<%ROOT%>';
@@ -183,13 +184,13 @@ class router {
             $other = array_merge($other,array_filter($a, function($value) { return !is_null($value) && $value !== ''; }));
         }
         $out = $other;
-        
+
         $out = join('/',$out);
         $out = str_replace($rootKey,$root,$out);
 
         return $out;
     }
-    
+    /** добавляет расширение php */
     private static function addPhpExt($path){
         $path = trim($path);
         $pos = strrpos(strtolower($path),'.php');
