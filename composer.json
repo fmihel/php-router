@@ -11,15 +11,14 @@
     ],
     "autoload": {
         "psr-4": {
-            "fmihel\\router\\": "source"
+            "fmihel\\": "source"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "fmihel\\router\\test\\": "tests"
+            "fmihel\\test\\": "tests"
         }
     },
     "require": {
-        "fmihel/php-lib": "^4.0"
     }
 }
