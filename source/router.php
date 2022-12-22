@@ -104,7 +104,7 @@ class router {
         if (self::$enable === null){
             self::_tryLoad();
         }
-        return self::$enable;
+        return (self::$enable===true);
     }
     
     public static function on($ev,$callback){
