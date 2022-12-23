@@ -187,7 +187,10 @@ class router {
 
         $out = join('/',$out);
         $out = str_replace($rootKey,$root,$out);
-
+        
+        if (strpos($out,$root)===false){
+            $out='/'.$out;
+        }
         return $out;
     }
     /** добавляет расширение php */
