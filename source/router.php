@@ -171,6 +171,11 @@ class router {
     }
     /** конкатенация имен маршрутов */
     public static function join(...$paths){
+        
+        foreach($paths as $key=>$path){
+            $paths[$key] = str_replace('/','\\',$path);
+        };
+        
         $root = ':\\';
         $rootKey = '<%ROOT%>';
         $out = str_replace($root,$rootKey,join('/',$paths));
