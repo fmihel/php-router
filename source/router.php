@@ -86,10 +86,9 @@ class router {
     }
     
     
-    public static function error($e){
-        
+    public static function error($e,$params=[]){
         $msg = is_object($e) ? $e->getMessage() : $e ;
-        echo json_encode([ 'res'=>0 , 'msg' => $msg ]);         
+        echo json_encode(array_merge([ 'res'=>0 , 'msg' => $msg ],$params));         
         exit;
     }
 
