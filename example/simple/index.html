@@ -9,8 +9,9 @@
     <button id="send">send</button>
     <button id="error">error</button>
     <script type="module">
-       import router from 'http://work/fmihel/router/php-router-client/source/router.js';
-    
+       import Router from 'http://work/fmihel/router/php-router-client/source/router.js';
+       const  router = new Router();
+       
         $(()=>{
 
             $('#send').on('click',()=>{

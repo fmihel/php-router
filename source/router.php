@@ -10,7 +10,7 @@ if (router::enabled()){
     try{
         router::init([
             'root'=>__DIR__,
-            'onBefore'=>function($data){ return $data; },
+            'before'=>function($data){ return $data; },
         ]);
         require_once router::module();
         router::done();
