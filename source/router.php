@@ -2,6 +2,9 @@
 
 namespace fmihel;
 
+require_once __DIR__.'/iRouterPlugin.php';
+require_once __DIR__.'/RouterPlugin.php';
+
 /* ----------------------------------------------
 Example for use:
 //-----------------------------------------------
@@ -35,6 +38,8 @@ class router {
 
     static private $rules = []; // [ 'from/path'=>'to/path',callback($root,$path):string || undef  ]
 
+    static private $plugins = [];
+
     public static function init($params=[]){
 
         if (self::_tryLoad()){
@@ -43,7 +48,8 @@ class router {
                 'root'      =>pathinfo($_SERVER['SCRIPT_FILENAME'])['dirname'], 
                 'before'    =>false,
                 'after'     =>false,
-                'rules'     =>[]
+                'rules'     =>[],
+                'plugins'   =>[],
             ],$params);
 
             self::$data       = self::$pack['data'];
@@ -52,6 +58,10 @@ class router {
 
             self::$root       = $params['root'];
         
+            foreach($params['plugins'] as $plugin){
+                self::addPlugin($plugin);
+            };
+
             if ($params['after'])
                 self::on('after',$params['after']);
 
@@ -73,7 +83,7 @@ class router {
 
     /** возвращает имя модуля к которому идет обращение от клиента */
     public static function module(){
-        
+        self::$pack = self::doPlugins('before',self::$pack);
         self::$pack = self::doEvent('before',self::$pack);
         
         $module_name = self::calcModuleName(self::$rules,self::$root,self::$path);
@@ -95,6 +105,7 @@ class router {
     public static function out($data){
         self::$pack['data'] = $data;
         self::$pack = self::doEvent('after',self::$pack);
+        self::$pack = self::doPlugins('after',self::$pack);
         echo json_encode(array_merge([ 'res'=>1 ],self::$pack));         
         exit;
     }
@@ -204,4 +215,23 @@ class router {
         return ($pos === strlen($path)-4) ? $path : $path.'.php';    
     }
     
+    public static function addPlugin($plugin){
+        $plugin->setRouter('fmihel\router');
+        self::$plugins[] = $plugin;
+    }
+
+    private static function doPlugins($ev,$pack){
+        $plugins = ( $ev === 'before' ? self::$plugins : array_reverse(self::$plugins) );
+        
+        foreach($plugins as $plugin){
+            if ($ev === 'before'){
+                $pack = $plugin->before($pack);
+            };
+
+            if ($ev === 'after'){
+                $pack = $plugin->after($pack);
+            };
+        }
+        return $pack;
+    } 
 }
