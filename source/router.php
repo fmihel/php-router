@@ -221,7 +221,7 @@ class router {
     }
 
     private static function doPlugins($ev,$pack){
-        $plugins = ( $ev === 'before' ? self::$plugins : array_reverse(self::$plugins) );
+        $plugins = ( $ev === 'after' ? array_reverse(self::$plugins) : self::$plugins );
         
         foreach($plugins as $plugin){
             if ($ev === 'before'){
