@@ -114,6 +114,7 @@ class Request {
 
         return { router: this.router };
     }
+
     addInterceptor(callback) {
         this.interceptors.push(callback);
         return () => {
@@ -128,6 +129,7 @@ class Request {
         }
         return out;
     }
+
     /**
      * Формирует URL с GET-параметрами, перезаписывая существующие.
      * Работает как с абсолютными, так и с относительными ссылками.

@@ -1,0 +1,33 @@
+<html>
+    <style>
+        body {
+            background-color: #212728;
+            color: limegreen;
+            padding: 2rem;
+        }
+    </style>
+    <body>
+        <h2>01_simple</h2>
+        <input id="send" type="button" value="send.." />
+
+        <script type="module">
+            import { Request } from './../../client/Request.js';
+            const request = new Request();
+
+            const $send = document.getElementById('send');
+
+            function send() {
+                request
+                    .send({
+                        to: 'test',
+                        data: { text: 'test' },
+                    })
+                    .then((o) => {
+                        console.log(o);
+                    });
+            }
+
+            $send.addEventListener('click', send);
+        </script>
+    </body>
+</html>

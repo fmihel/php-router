@@ -11,38 +11,36 @@ class Session {
         this._prevEvent = null;
 
         this.request.addInterceptor((state, config) => {
-
             if (state === 'before') {
-                if (!(config?.skipAuth) && this?.data?.token) {
+                if (!config?.skipAuth && this?.data?.token) {
                     config.headers.Authorization = `Bearer ${this.data.token}`;
                 }
             }
 
             if (state === 'after') {
-                if (config.status == 401){
+                if (config.status == 401) {
                     this.logout();
                 }
             }
             if (state === 'error') {
-                if (config.status == 401){
+                if (config.status == 401) {
                     this.logout();
                 }
             }
-            return config
-        })
+            return config;
+        });
     }
     enable() {
-        return (this.data && this.data.token);
+        return this.data && this.data.token;
     }
     async autorizeByLogin(login, password) {
         this.data = null;
         try {
-            const res = await this.request.post(
-                {
-                    url: this.loginScript,
-                    data: { login, password },
-                    skipAuth: true 
-                });
+            const res = await this.request.post({
+                url: this.loginScript,
+                data: { login, password },
+                skipAuth: true,
+            });
             const { status, data } = res;
             if (status == 401 || !data.success) {
                 throw new Error('access denied');
@@ -52,11 +50,10 @@ class Session {
             this._saveTokenToStorage(data.payload.token);
 
             this._do('autorize');
-
         } catch (error) {
             console.log(error);
             this._resetToken();
-            throw new Error("access denied");
+            throw new Error('access denied');
         }
     }
 
@@ -66,12 +63,12 @@ class Session {
         try {
             let token = this._loadTokenFromStorage();
             if (!token) {
-                throw new Error("no token");
+                throw new Error('no token');
             }
             const res = await this.request.post({
-                url:this.loginScript, 
-                data:{ token },
-                skipAuth: true 
+                url: this.loginScript,
+                data: { token },
+                skipAuth: true,
             });
 
             const { status, data } = res;
@@ -83,12 +80,10 @@ class Session {
             this.data = data.payload;
             this._saveTokenToStorage(data.payload.token);
             this._do('autorize');
-
         } catch (error) {
             this._resetToken();
-            throw new Error("access denied");
+            throw new Error('access denied');
         }
-
     }
 
     logout() {
@@ -96,22 +91,23 @@ class Session {
         this._do('logout');
     }
 
-
     on(ev, callback) {
         this._listeners[ev].push(callback);
-        return () => { this._listeners = this._listeners.filter(f => f !== callback); };
+        return () => {
+            this._listeners = this._listeners.filter((f) => f !== callback);
+        };
     }
 
     _do(ev, ...params) {
         if (this._prevEvent !== ev) {
             this._prevEvent = ev;
-            this._listeners[ev].map(f => {
+            this._listeners[ev].map((f) => {
                 try {
                     f(...params);
                 } catch (error) {
-                    console.log(error)
+                    console.log(error);
                 }
-            })
+            });
         }
     }
 
@@ -129,6 +125,6 @@ class Session {
     _clearTokenStorage() {
         localStorage.removeItem(this.storageVar);
     }
-
 }
 
+export { Session };
