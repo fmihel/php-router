@@ -1,0 +1,68 @@
+<html>
+    <style>
+        body {
+            background-color: #212728;
+            color: limegreen;
+            padding: 2rem;
+        }
+        input {
+            display: block;
+            margin-bottom: 0.5rem;
+            min-width: 15rem;
+        }
+    </style>
+    <body>
+        <h2>04_autorize</h2>
+
+        <input id="status" value="..." />
+        <input id="btn_autorize" type="button" value="autorize" />
+        <input id="btn_logout" type="button" value="logout" />
+        <input id="send" type="button" value="send data" />
+
+        <script type="module">
+            import { Request } from './../../client/Request.js';
+            import { Session } from './../../client/Session.js';
+            const request = new Request();
+            const session = new Session(request);
+
+            const $btn_autorize = document.getElementById('btn_autorize');
+            const $btn_logout = document.getElementById('btn_logout');
+            const $send = document.getElementById('send');
+            const $status = document.getElementById('status');
+
+            function autorize() {
+                session
+                    .autorizeByLogin({ login: '1', password: '1' })
+                    .then((o) => {
+
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            }
+
+            function logout() {
+                session.logout();
+            }
+
+            function send() {
+                request
+                    .send({
+                        to: 'ajax/handler',
+                        data: { text: 'test3' },
+                    })
+                    .then((o) => {
+                        console.log(o);
+                    })
+                    .catch((e) => {
+                        console.log('system error....');
+                        console.error(e);
+                    });
+            }
+
+            $btn_autorize.addEventListener('click', autorize);
+            $btn_logout.addEventListener('click', logout);
+            $send.addEventListener('click', send);
+        </script>
+    </body>
+</html>

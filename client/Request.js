@@ -12,6 +12,8 @@ class Request {
         noCache = true,
         ...params
     }) {
+        let status = -1;
+
         let config = { url, to, attrs, headers, ...params };
         config = await this._callInterceptors('before', config);
 
@@ -37,22 +39,30 @@ class Request {
 
         try {
             const res = await fetch(curl, options);
-            const data = await res.json();
-            const out = await this._callInterceptors('after', {
-                status: res.status,
-                url,
-                attrs,
-                data,
-                ...params,
-            });
-            return out;
+            status = res.status;
+
+            if (status == 401 || status == 200) {
+                const data = await res.json();
+                const out = await this._callInterceptors('after', {
+                    status,
+                    url,
+                    attrs,
+                    data,
+                    ...params,
+                });
+                return out;
+            } else {
+                throw new Error(res.status);
+            }
         } catch (error) {
-            await this._callInterceptors('error', { error, url, attrs, params });
+            await this._callInterceptors('error', { error, url, attrs, status, ...params });
             throw error;
         }
     }
 
     async post({ url = this.router, to = undefined, data = {}, noCache = true, ...params }) {
+        let status = -1;
+
         let config = { url, to, data, headers: {}, ...params };
         config = await this._callInterceptors('before', config);
 
@@ -76,21 +86,32 @@ class Request {
 
         try {
             const res = await fetch(config.url, options);
-            const json = await res.json();
+            status = res.status;
+            if (status == 401 || status == 200) {
+                const json = await res.json();
 
-            let out = {
-                status: res.status,
-                url,
-                to,
-                sendingData: data,
-                data: json,
-                ...params,
-            };
+                let out = {
+                    status,
+                    url,
+                    to,
+                    sendingData: data,
+                    data: json,
+                    ...params,
+                };
 
-            out = await this._callInterceptors('after', out);
-            return out;
+                out = await this._callInterceptors('after', out);
+                return out;
+            } else {
+                throw new Error(res.status);
+            }
         } catch (error) {
-            await this._callInterceptors('error', { error, url, data, params });
+            await this._callInterceptors('error', {
+                error,
+                url,
+                sendingData: data,
+                status,
+                ...params,
+            });
             throw error;
         }
     }

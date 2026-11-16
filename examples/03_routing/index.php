@@ -18,8 +18,10 @@ try {
         require_once $module;
 
     }
-
+} catch (ModuleIsNotDefined $e) {
+    response::error($e, 404);
 } catch (\Exception $e) {
+
     console::log($e);
     response::error($e);
 }
