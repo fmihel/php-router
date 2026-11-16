@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "fmihel\\router\\": "source"
+            "fmihel\\router\\": "server"
         }
     },
     "autoload-dev": {
@@ -20,6 +20,9 @@
         }
     },
     "require": {
-        "fmihel/php-lib": "^4.0"
+        "firebase/php-jwt": "^6.10"
+    },
+    "require-dev": {
+        "fmihel/console-log": "^1.8"
     }
 }
