@@ -54,7 +54,7 @@ class Session {
         } catch (error) {
             console.log(error);
             this._resetToken();
-            throw new Error('access denied');
+            throw 'access denied';
         }
     }
 
@@ -85,7 +85,7 @@ class Session {
             return { ...this.data };
         } catch (error) {
             this._resetToken();
-            throw new Error('access denied');
+            throw 'access denied';
         }
     }
 

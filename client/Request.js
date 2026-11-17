@@ -106,14 +106,15 @@ class Request {
                 throw `status = ${status}`;
             }
         } catch (error) {
-            await this._callInterceptors('error', {
+            let e = {
                 error,
                 url,
                 sendingData: data,
                 status,
                 ...params,
-            });
-            throw error;
+            }; 
+            await this._callInterceptors('error', e);
+            throw e;
         }
     }
 

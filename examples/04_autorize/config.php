@@ -12,7 +12,7 @@
 define('CONFIG_EXEPTION', '-exception-');
 define('config', [
     'jwt' => [
-        'key'    => 'wefhg-23434-werf83hjjh-gwerf1', // Секретный ключ (должен быть очень сложным)
+        'key'    => 'wefhg-23434-werf83hjjh-gwerf2', // Секретный ключ (должен быть очень сложным)
         'server' => 'local',                         // Секретный ключ (должен быть очень сложным)
         'expire' => 366,                             // кол-во дней жизни
     ],
