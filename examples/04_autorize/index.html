@@ -53,6 +53,7 @@
             }
 
             function logout() {
+                msg('logout');
                 session.logout();
             }
 
@@ -67,8 +68,7 @@
                         console.log(o);
                     })
                     .catch((e) => {
-                        console.log('system error....');
-                        console.error(e);
+                        console.log(e);
                     });
             }
 

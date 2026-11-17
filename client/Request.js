@@ -52,7 +52,7 @@ class Request {
                 });
                 return out;
             } else {
-                throw new Error(res.status);
+                throw `status = ${status}`;
             }
         } catch (error) {
             await this._callInterceptors('error', { error, url, attrs, status, ...params });
@@ -88,7 +88,7 @@ class Request {
             const res = await fetch(config.url, options);
             status = res.status;
 
-            if ( status == 200) {
+            if (status == 200) {
                 const json = await res.json();
 
                 let out = {
@@ -103,7 +103,7 @@ class Request {
                 out = await this._callInterceptors('after', out);
                 return out;
             } else {
-                throw new Error(res.status);
+                throw `status = ${status}`;
             }
         } catch (error) {
             await this._callInterceptors('error', {
