@@ -25,7 +25,7 @@ try {
         // throw new \Exception('custom error');
 
         // Авторизация из запроса: Bearer-заголовок или httpOnly-cookie (+ CSRF)
-        session::autorizeFromRequest();
+        session::authorizeFromRequest();
 
         $module = router::module([__DIR__]);
         if (! file_exists($module)) {
@@ -35,14 +35,14 @@ try {
 
     }
 } catch (AccessDenied $e) {
-    response::error($e, response::HTTP_UNAUTORIZED_401);
+    response::error($e, response::HTTP_UNAUTHORIZED_401);
 } catch (InvalidRoute $e) {
     response::error($e, response::HTTP_NOT_FOUND_404);
 } catch (ModuleIsNotDefined $e) {
     response::error($e, response::HTTP_NOT_FOUND_404);
 } catch (NotConfigured $e) {
     console::log($e);
-    response::error($e, response::HTTP_INTERBAL_SERVER_ERROR_500);
+    response::error($e, response::HTTP_INTERNAL_SERVER_ERROR_500);
 } catch (\Exception $e) {
 
     console::log($e);

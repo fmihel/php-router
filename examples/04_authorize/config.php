@@ -1,5 +1,5 @@
 <?php
-define('CONFIG_EXEPTION', '-exception-');
+define('CONFIG_EXCEPTION', '-exception-');
 define('config', [
     'jwt'             => [
         'key'    => 'wefhg-23434-werf83hjjh-gwerf2', // Секретный ключ (должен быть очень сложным)

@@ -1,7 +1,7 @@
 <?php
 namespace fmihel\router;
 
-require_once __DIR__ . '/exceptions/TokenExeption.php';
+require_once __DIR__ . '/exceptions/TokenException.php';
 require_once __DIR__ . '/exceptions/AccessDenied.php';
 require_once __DIR__ . '/exceptions/NotConfigured.php';
 
@@ -67,7 +67,7 @@ class session
         return self::isCookieMode() ? null : (self::$token ?: null);
     }
 
-    public static function autorizeByLogin(string $login, string $password)
+    public static function authorizeByLogin(string $login, string $password)
     {
         self::reset();
 
@@ -87,7 +87,7 @@ class session
         }
     }
 
-    public static function autorizeByToken(string $token)
+    public static function authorizeByToken(string $token)
     {
         self::assertConfigured();
         self::reset();
@@ -129,7 +129,7 @@ class session
      * Авторизация по токену из текущего запроса: ищет Bearer-заголовок,
      * а в cookie-режиме — httpOnly-cookie. Для изменяющих методов проверяет CSRF.
      */
-    public static function autorizeFromRequest(): void
+    public static function authorizeFromRequest(): void
     {
         self::assertCsrf();
 
@@ -138,7 +138,7 @@ class session
             throw new AccessDenied();
         }
 
-        self::autorizeByToken($token);
+        self::authorizeByToken($token);
     }
 
     /** Сброс авторизации + удаление cookie (для серверного logout). */

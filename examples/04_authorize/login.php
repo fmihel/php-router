@@ -31,12 +31,12 @@ try {
     console::log(input::data());
 
     if ($login && $pass) {
-        session::autorizeByLogin($login, $pass);
+        session::authorizeByLogin($login, $pass);
     } elseif ($token) {
-        session::autorizeByToken($token);
+        session::authorizeByToken($token);
     } else {
         // cookie-режим: токен приходит в httpOnly-cookie (или Bearer-заголовке)
-        session::autorizeFromRequest();
+        session::authorizeFromRequest();
     }
 
     response::success(session::clientTokenInfo());

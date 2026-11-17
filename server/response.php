@@ -10,9 +10,9 @@ class response
     const HTTP_OK_200                    = 200; // все ок
     const HTTP_NO_CONTENT_204            = 204; // запрос успешный, но в теле нет контента
     const HTTP_BAD_REQUEST               = 400; // пришли неправильные данные
-    const HTTP_UNAUTORIZED_401           = 401; // нужна авторизация
+    const HTTP_UNAUTHORIZED_401          = 401; // нужна авторизация
     const HTTP_NOT_FOUND_404             = 404; // не найдено
-    const HTTP_INTERBAL_SERVER_ERROR_500 = 500; // ошибка на сервере
+    const HTTP_INTERNAL_SERVER_ERROR_500 = 500; // ошибка на сервере
 
     /**
      * Настройка CORS.
@@ -82,9 +82,9 @@ class response
         exit();
     }
 
-    public static function error($e, $code = self::HTTP_INTERBAL_SERVER_ERROR_500)
+    public static function error($e, $code = self::HTTP_INTERNAL_SERVER_ERROR_500)
     {
-        if ($e instanceof \Throwable) {
+        if ($e instanceof \Exception) {
             $message = $e->getMessage();
         } else {
             $message = "$e";

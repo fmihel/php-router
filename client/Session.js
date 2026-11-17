@@ -26,7 +26,7 @@ class Session {
         this.credentials = options.credentials ?? (this.mode === 'cookie' ? 'include' : 'same-origin');
 
         this._listeners = {
-            autorize: [],
+            authorize: [],
             logout: [],
         };
         this._prevEvent = null;
@@ -72,7 +72,7 @@ class Session {
         return this.mode === 'cookie' ? true : !!this.data.token;
     }
 
-    async autorizeByLogin(login, password) {
+    async authorizeByLogin(login, password) {
         this.data = null;
         try {
             const res = await this.request.post({
@@ -88,7 +88,7 @@ class Session {
         }
     }
 
-    async autorizeByToken() {
+    async authorizeByToken() {
         this.data = null;
         try {
             // В cookie-режиме токен уходит автоматически в cookie, тело пустое
@@ -151,7 +151,7 @@ class Session {
             this._saveToken(data.payload.token);
         }
 
-        this._do('autorize');
+        this._do('authorize');
         return { ...this.data };
     }
 

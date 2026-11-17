@@ -20,9 +20,9 @@
         }
     </style>
     <body>
-        <h2>04_autorize</h2>
+        <h2>04_authorize</h2>
 
-        <input id="btn_autorize" type="button" value="autorize" />
+        <input id="btn_authorize" type="button" value="authorize" />
         <input id="btn_logout" type="button" value="logout" />
         <input id="send" type="button" value="send data" />
         <textarea id="status" value="..."></textarea>
@@ -33,18 +33,18 @@
             <br/>
             config.php:<br/>
             - corsCredentials = false<br/>
-            - tokenNode = 'header'<br/>
+            - tokenMode = 'header'<br/>
             в JS:<br/>
             const session = new Session(request,{<br/>
                 mode:'local',<br/>
                 storage:'local' // 'session'<br/> 
             })<br/><br/><br/>
             <hr/>
-            Включение режима httpOnly (хранение coockie на сервере)<br/>
+            Включение режима httpOnly (хранение cookie на сервере)<br/>
             <br/>
             config.php:<br/>
             - corsCredentials = true<br/>
-            - tokenNode = 'cookie'<br/>
+            - tokenMode = 'cookie'<br/>
             в JS:<br/>
             const session = new Session(request,{<br/>
                 mode:'cookie',<br/>
@@ -63,12 +63,12 @@
             //   mode: 'cookie' — httpOnly-cookie на сервере + CSRF-заголовок (XSS-безопаснее).
             // Должен совпадать с session::$tokenMode в config.php.
             const session = new Session(request, {
-                // mode: 'local', // поменяйте на 'cookie' вмеcте с config.php
-                mode: 'cookie', // поменяйте на 'cookie' вмеcте с config.php
+                // mode: 'local', // поменяйте на 'cookie' вместе с config.php
+                mode: 'cookie', // поменяйте на 'cookie' вместе с config.php
                 storage: 'local', // 'local' | 'session'
             });
 
-            const $btn_autorize = document.getElementById('btn_autorize');
+            const $btn_authorize = document.getElementById('btn_authorize');
             const $btn_logout = document.getElementById('btn_logout');
             const $send = document.getElementById('send');
             const $status = document.getElementById('status');
@@ -78,15 +78,15 @@
                 $status.scrollTop = $status.scrollHeight;
             }
 
-            function autorize() {
+            function authorize() {
                 session
-                    .autorizeByLogin('1', '1')
+                    .authorizeByLogin('1', '1')
                     .then((o) => {
-                        msg('autorize :ok.');
+                        msg('authorize :ok.');
                         console.log(o);
                     })
                     .catch((e) => {
-                        msg('autorize :error!');
+                        msg('authorize :error!');
                         console.log(e);
                     });
             }
@@ -112,24 +112,24 @@
             }
 
             session
-                .autorizeByToken()
+                .authorizeByToken()
                 .then((o) => {
-                    msg('auto autorize :ok.');
+                    msg('auto authorize :ok.');
                     console.log(o);
                 })
                 .catch((e) => {
-                    msg('auto autorize :error!');
+                    msg('auto authorize :error!');
                     console.log(e);
                 });
 
-            session.on('autorize', () => {
-                console.log('on autorize');
+            session.on('authorize', () => {
+                console.log('on authorize');
             });
             session.on('logout', () => {
                 console.log('on logout');
             });
 
-            $btn_autorize.addEventListener('click', autorize);
+            $btn_authorize.addEventListener('click', authorize);
             $btn_logout.addEventListener('click', logout);
             $send.addEventListener('click', send);
         </script>
