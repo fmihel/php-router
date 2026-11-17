@@ -41,7 +41,7 @@ class Request {
             const res = await fetch(curl, options);
             status = res.status;
 
-            if (status == 401 || status == 200) {
+            if (status == 200) {
                 const data = await res.json();
                 const out = await this._callInterceptors('after', {
                     status,
@@ -87,7 +87,8 @@ class Request {
         try {
             const res = await fetch(config.url, options);
             status = res.status;
-            if (status == 401 || status == 200) {
+
+            if ( status == 200) {
                 const json = await res.json();
 
                 let out = {

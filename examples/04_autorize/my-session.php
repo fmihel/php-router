@@ -2,8 +2,6 @@
 
 use fmihel\router\exceptions\AccessDenied;
 
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/router/session.php';
 require_once __DIR__ . '/config.php';
 
 define('USERS', [

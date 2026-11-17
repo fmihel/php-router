@@ -50,6 +50,7 @@ class Session {
             this._saveTokenToStorage(data.payload.token);
 
             this._do('autorize');
+            return { ...this.data };
         } catch (error) {
             console.log(error);
             this._resetToken();
@@ -80,6 +81,8 @@ class Session {
             this.data = data.payload;
             this._saveTokenToStorage(data.payload.token);
             this._do('autorize');
+
+            return { ...this.data };
         } catch (error) {
             this._resetToken();
             throw new Error('access denied');

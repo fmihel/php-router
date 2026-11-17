@@ -5,19 +5,23 @@
             color: limegreen;
             padding: 2rem;
         }
-        input {
+        input,
+        textarea {
             display: block;
             margin-bottom: 0.5rem;
             min-width: 15rem;
+        }
+        textarea {
+            min-height: 200px;
         }
     </style>
     <body>
         <h2>04_autorize</h2>
 
-        <input id="status" value="..." />
         <input id="btn_autorize" type="button" value="autorize" />
         <input id="btn_logout" type="button" value="logout" />
         <input id="send" type="button" value="send data" />
+        <textarea id="status" value="..."></textarea>
 
         <script type="module">
             import { Request } from './../../client/Request.js';
@@ -30,13 +34,20 @@
             const $send = document.getElementById('send');
             const $status = document.getElementById('status');
 
+            function msg(str) {
+                $status.value += ($status.value ? '\n' : '') + `${str}`;
+                $status.scrollTop = $status.scrollHeight;
+            }
+
             function autorize() {
                 session
-                    .autorizeByLogin({ login: '1', password: '1' })
+                    .autorizeByLogin('1', '1')
                     .then((o) => {
-
+                        msg('autorize :ok.');
+                        console.log(o);
                     })
                     .catch((e) => {
+                        msg('autorize :error!');
                         console.log(e);
                     });
             }
@@ -52,6 +63,7 @@
                         data: { text: 'test3' },
                     })
                     .then((o) => {
+                        msg(o.data[0]);
                         console.log(o);
                     })
                     .catch((e) => {
@@ -59,6 +71,25 @@
                         console.error(e);
                     });
             }
+
+            session
+                .autorizeByToken()
+                .then((o) => {
+                    msg('auto autorize :ok.');
+                    console.log(o);
+                })
+                .catch((e) => {
+                    msg('auto autorize :error!');
+                    console.log(e);
+
+                });
+            
+            session.on('autorize',()=>{
+                console.log('on autorize')
+            })
+            session.on('logout',()=>{
+                console.log('on logout')
+            })
 
             $btn_autorize.addEventListener('click', autorize);
             $btn_logout.addEventListener('click', logout);

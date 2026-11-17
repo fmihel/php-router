@@ -8,4 +8,4 @@ $data = input::data('text');
 
 console::log($data);
 
-response::data(['handler2']);
+response::data(['handler response']);

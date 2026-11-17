@@ -1,15 +1,21 @@
 <?php
 
 use fmihel\console;
+use fmihel\router\exceptions\AccessDenied;
 use fmihel\router\exceptions\ModuleIsNotDefined;
+use fmihel\router\exceptions\TokenException;
+use fmihel\router\input;
 use fmihel\router\response;
 use fmihel\router\router;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/my-session.php';
 
 try {
 
     if (router::enable()) {
+
+        session::autorizeByToken(input::token());
 
         $module = router::module([__DIR__]);
         if (! file_exists($module)) {
@@ -18,6 +24,10 @@ try {
         require_once $module;
 
     }
+} catch (TokenException $e) {
+    response::error($e, 401);
+} catch (AccessDenied $e) {
+    response::error($e, 401);
 } catch (ModuleIsNotDefined $e) {
     response::error($e, 404);
 } catch (\Exception $e) {

@@ -1,9 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/my-session.php';
-require_once __DIR__ . '/router/input.php';
-require_once __DIR__ . '/router/response.php';
-require_once __DIR__ . '/router/exceptions/AccessDenied.php';
 
 use fmihel\console;
 use fmihel\router\exceptions\AccessDenied;
@@ -15,6 +13,8 @@ try {
     $login = input::data('login', false);
     $pass  = input::data('password', false);
     $token = input::data('token', false);
+
+    console::log(input::data());
 
     if ($login && $pass) {
         session::autorizeByLogin($login, $pass);
