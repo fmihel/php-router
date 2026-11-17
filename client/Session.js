@@ -97,7 +97,7 @@ class Session {
     on(ev, callback) {
         this._listeners[ev].push(callback);
         return () => {
-            this._listeners = this._listeners.filter((f) => f !== callback);
+            this._listeners[ev] = this._listeners[ev].filter((f) => f !== callback);
         };
     }
 

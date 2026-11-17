@@ -149,7 +149,7 @@ class Request {
     async _callInterceptors(state, config) {
         let out = { ...config };
         for (const fn of this.interceptors) {
-            out = await fn(state, config);
+            out = await fn(state, out);
         }
         return out;
     }
