@@ -1,20 +1,22 @@
 <?php
-// require_once 'vendor/autoload.php';
-
-// // Секретный ключ (должен быть очень сложным)
-// define('JWT_SECRET', 'YOUR_SUPER_SECRET_KEY_123456');
-
-// // Идентификатор вашего сервера/сайта
-// define('JWT_ISSUER', 'my-api-server.local');
-
-// // Время жизни токена (1 час = 3600 секунд)
-// define('JWT_EXPIRE', 3600);
 define('CONFIG_EXEPTION', '-exception-');
 define('config', [
-    'jwt' => [
+    'jwt'             => [
         'key'    => 'wefhg-23434-werf83hjjh-gwerf2', // Секретный ключ (должен быть очень сложным)
-        'server' => 'local',                         // Секретный ключ (должен быть очень сложным)
-        'expire' => 366,                             // кол-во дней жизни
+        'server' => 'local',                         // Issuer: для какого сервера выпущен токен
+        'expire' => 366,                             // кол-во дней жизни (кладётся в claim exp)
     ],
 
+    // Способ хранения токена на клиенте:
+    //   'header' — Bearer-токен (клиент хранит сам, напр. localStorage);
+    //   'cookie' — httpOnly-cookie (защита от XSS) + CSRF double-submit.
+    // 'tokenMode'       => 'header',
+    'tokenMode'       => 'cookie',
+
+    // CORS: '*' — разрешить любые origin, либо массив белого списка
+    // 'cors' => '*',
+    'cors'            => ['http://localhost', 'http://127.0.0.1'],
+
+    // Разрешать cookie/credentials в кросс-доменных запросах
+    'corsCredentials' => true,
 ]);

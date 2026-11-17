@@ -49,15 +49,19 @@ class session extends fmihel\router\session
 
     }
 
-    /** данные отправялемые на клиент вместе с токеном */
+    /** данные отправляемые на клиент вместе с токеном */
     public static function clientTokenInfo(): array
     {
         return [
-            'token' => self::$token,
+            // в cookie-режиме токен не отдаём (он в httpOnly-cookie)
+            'token' => self::tokenForClient(),
             'name'  => self::$tokenData['name'],
             'right' => self::data('right'),
         ];
     }
 }
 
-session::$key = config['jwt']['key'];
+session::$key       = config['jwt']['key'];
+session::$server    = config['jwt']['server'];
+session::$expire    = config['jwt']['expire'];
+session::$tokenMode = config['tokenMode'] ?? 'header';

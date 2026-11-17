@@ -25,6 +25,7 @@ class Request {
         const options = {
             method: 'GET',
             ...(noCache ? { cache: 'no-store' } : {}),
+            ...(config.credentials ? { credentials: config.credentials } : {}),
             headers: {
                 // ...this.token ? { 'Authorization': `Bearer ${this.token}` } : {}
                 ...(noCache
@@ -70,6 +71,7 @@ class Request {
         const options = {
             method: 'POST',
             ...(noCache ? { cache: 'no-store' } : {}),
+            ...(config.credentials ? { credentials: config.credentials } : {}),
             headers: {
                 // ...this.token ? { 'Authorization': `Bearer ${this.token}` } : {},
                 'Content-Type': 'application/json',

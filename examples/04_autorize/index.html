@@ -14,6 +14,10 @@
         textarea {
             min-height: 200px;
         }
+        pre{
+            text-align: left;
+            white-space: pre-wrap;
+        }
     </style>
     <body>
         <h2>04_autorize</h2>
@@ -23,11 +27,46 @@
         <input id="send" type="button" value="send data" />
         <textarea id="status" value="..."></textarea>
 
+        <div>
+            <hr/>
+            Включение режима storage (хранение в localStorage)<br/>
+            <br/>
+            config.php:<br/>
+            - corsCredentials = false<br/>
+            - tokenNode = 'header'<br/>
+            в JS:<br/>
+            const session = new Session(request,{<br/>
+                mode:'local',<br/>
+                storage:'local' // 'session'<br/> 
+            })<br/><br/><br/>
+            <hr/>
+            Включение режима httpOnly (хранение coockie на сервере)<br/>
+            <br/>
+            config.php:<br/>
+            - corsCredentials = true<br/>
+            - tokenNode = 'cookie'<br/>
+            в JS:<br/>
+            const session = new Session(request,{<br/>
+                mode:'cookie',<br/>
+                storage:'local' // 'session'<br/> 
+            })<br/><br/><br/>
+
+
+        </div>
         <script type="module">
             import { Request } from './../../client/Request.js';
             import { Session } from './../../client/Session.js';
+
             const request = new Request();
-            const session = new Session(request);
+            // Режим хранения токена:
+            //   mode: 'local'  — Bearer-токен, хранится в localStorage/sessionStorage;
+            //   mode: 'cookie' — httpOnly-cookie на сервере + CSRF-заголовок (XSS-безопаснее).
+            // Должен совпадать с session::$tokenMode в config.php.
+            const session = new Session(request, {
+                // mode: 'local', // поменяйте на 'cookie' вмеcте с config.php
+                mode: 'cookie', // поменяйте на 'cookie' вмеcте с config.php
+                storage: 'local', // 'local' | 'session'
+            });
 
             const $btn_autorize = document.getElementById('btn_autorize');
             const $btn_logout = document.getElementById('btn_logout');
@@ -60,7 +99,6 @@
             function send() {
                 request
                     .send({
-                        
                         to: 'ajax/handler',
                         data: { text: 'test3' },
                     })
@@ -82,15 +120,14 @@
                 .catch((e) => {
                     msg('auto autorize :error!');
                     console.log(e);
-
                 });
-            
-            session.on('autorize',()=>{
-                console.log('on autorize')
-            })
-            session.on('logout',()=>{
-                console.log('on logout')
-            })
+
+            session.on('autorize', () => {
+                console.log('on autorize');
+            });
+            session.on('logout', () => {
+                console.log('on logout');
+            });
 
             $btn_autorize.addEventListener('click', autorize);
             $btn_logout.addEventListener('click', logout);

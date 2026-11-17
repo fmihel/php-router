@@ -1,38 +1,77 @@
 class Session {
-    constructor(request) {
-        this.data = null;
+    /**
+     * @param {Request} request - экземпляр Request
+     * @param {Object} [options]
+     * @param {'local'|'cookie'} [options.mode='local'] - где хранить токен:
+     *        'local'  — Bearer-токен, клиент хранит его (storage);
+     *        'cookie' — httpOnly-cookie, клиент токен не видит, для изменяющих
+     *                   запросов отправляется CSRF-заголовок (double-submit).
+     * @param {'local'|'session'} [options.storage='local'] - тип storage для режима 'local'
+     * @param {string} [options.storageVar='jwt'] - ключ хранения токена
+     * @param {string} [options.loginScript='login.php'] - скрипт авторизации
+     * @param {string} [options.csrfVar='csrf_token'] - имя cookie с CSRF-токеном
+     * @param {string} [options.csrfHeader='X-CSRF-Token'] - заголовок для CSRF-токена
+     * @param {RequestCredentials} [options.credentials] - режим credentials для fetch
+     *        (по умолчанию 'include' в cookie-режиме, 'same-origin' иначе)
+     */
+    constructor(request, options = {}) {
         this.request = request;
-        this.loginScript = 'login.php';
-        this.storageVar = 'jwt';
+        this.data = null;
+        this.loginScript = options.loginScript ?? 'login.php';
+        this.mode = options.mode ?? 'local';
+        this.storage = options.storage ?? 'local';
+        this.storageVar = options.storageVar ?? 'jwt';
+        this.csrfVar = options.csrfVar ?? 'csrf_token';
+        this.csrfHeader = options.csrfHeader ?? 'X-CSRF-Token';
+        this.credentials = options.credentials ?? (this.mode === 'cookie' ? 'include' : 'same-origin');
+
         this._listeners = {
             autorize: [],
             logout: [],
         };
         this._prevEvent = null;
+        this._loggingOut = false;
 
         this.request.addInterceptor((ev, config) => {
+            if (config == null) {
+                return config;
+            }
+            const headers = config.headers ?? (config.headers = {});
+
             if (ev === 'before') {
-                if (!config?.skipAuth && this?.data?.token) {
-                    config.headers.Authorization = `Bearer ${this.data.token}`;
+                // В cookie-режиме токен передаёт браузер, заголовок не нужен
+                if (this.mode === 'local' && !config?.skipAuth && this?.data?.token) {
+                    headers.Authorization = `Bearer ${this.data.token}`;
+                }
+
+                if (config.credentials === undefined) {
+                    config.credentials = this.credentials;
+                }
+
+                // CSRF double-submit: cookie (не httpOnly) читает JS и шлёт в заголовке
+                if (this.mode === 'cookie' && !config?.skipAuth) {
+                    const csrf = this._readCookie(this.csrfVar);
+                    if (csrf) {
+                        headers[this.csrfHeader] = csrf;
+                    }
                 }
             }
 
-            if (ev === 'after') {
-                if (config.status == 401) {
-                    this.logout();
-                }
+            if ((ev === 'after' || ev === 'error') && config.status == 401) {
+                this.logout();
             }
-            if (ev === 'error') {
-                if (config.status == 401) {
-                    this.logout();
-                }
-            }
+
             return config;
         });
     }
+
     enable() {
-        return this.data && this.data.token;
+        if (!this.data) {
+            return false;
+        }
+        return this.mode === 'cookie' ? true : !!this.data.token;
     }
+
     async autorizeByLogin(login, password) {
         this.data = null;
         try {
@@ -41,57 +80,56 @@ class Session {
                 data: { login, password },
                 skipAuth: true,
             });
-            const { status, data } = res;
-            if (status == 401 || !data.success) {
-                throw new Error('access denied');
-            }
-
-            this.data = data.payload;
-            this._saveTokenToStorage(data.payload.token);
-
-            this._do('autorize');
-            return { ...this.data };
+            return this._applyAuth(res);
         } catch (error) {
             console.log(error);
             this._resetToken();
-            throw 'access denied';
+            throw new Error('access denied');
         }
     }
 
     async autorizeByToken() {
         this.data = null;
-        this.token = null;
         try {
-            let token = this._loadTokenFromStorage();
-            if (!token) {
+            // В cookie-режиме токен уходит автоматически в cookie, тело пустое
+            const token = this.mode === 'local' ? this._loadToken() : null;
+            if (this.mode === 'local' && !token) {
                 throw new Error('no token');
             }
+
             const res = await this.request.post({
                 url: this.loginScript,
-                data: { token },
-                skipAuth: true,
+                data: this.mode === 'local' ? { token } : {},
             });
-
-            const { status, data } = res;
-
-            if (status == 401 || !data.success) {
-                throw new Error('access denied');
-            }
-
-            this.data = data.payload;
-            this._saveTokenToStorage(data.payload.token);
-            this._do('autorize');
-
-            return { ...this.data };
+            return this._applyAuth(res);
         } catch (error) {
             this._resetToken();
-            throw 'access denied';
+            throw new Error('access denied');
         }
     }
 
     logout() {
+        if (this._loggingOut) {
+            return;
+        }
+        this._loggingOut = true;
+
+        const wasCookieMode = this.mode === 'cookie';
         this._resetToken();
         this._do('logout');
+
+        // В cookie-режиме httpOnly-cookie может удалить только сервер
+        if (wasCookieMode) {
+            try {
+                this.request
+                    .post({ url: this.loginScript, data: { action: 'logout' }, skipAuth: true })
+                    .catch(() => {});
+            } catch (error) {
+                /* ignore */
+            }
+        }
+
+        this._loggingOut = false;
     }
 
     on(ev, callback) {
@@ -99,6 +137,22 @@ class Session {
         return () => {
             this._listeners[ev] = this._listeners[ev].filter((f) => f !== callback);
         };
+    }
+
+    _applyAuth(res) {
+        const { status, data } = res;
+        if (status == 401 || !data || !data.success) {
+            throw new Error('access denied');
+        }
+
+        this.data = data.payload ?? null;
+
+        if (this.mode === 'local' && data.payload?.token) {
+            this._saveToken(data.payload.token);
+        }
+
+        this._do('autorize');
+        return { ...this.data };
     }
 
     _do(ev, ...params) {
@@ -117,16 +171,34 @@ class Session {
     _resetToken() {
         this.request.token = null;
         this.data = null;
-        this._clearTokenStorage();
+        if (this.mode === 'local') {
+            this._clearToken();
+        }
     }
-    _saveTokenToStorage(token) {
-        localStorage.setItem(this.storageVar, token);
+
+    _store() {
+        return this.storage === 'session' ? sessionStorage : localStorage;
     }
-    _loadTokenFromStorage() {
-        return localStorage.getItem(this.storageVar);
+
+    _saveToken(token) {
+        this._store().setItem(this.storageVar, token);
     }
-    _clearTokenStorage() {
-        localStorage.removeItem(this.storageVar);
+
+    _loadToken() {
+        return this._store().getItem(this.storageVar);
+    }
+
+    _clearToken() {
+        this._store().removeItem(this.storageVar);
+    }
+
+    _readCookie(name) {
+        if (typeof document === 'undefined' || !document.cookie) {
+            return '';
+        }
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = document.cookie.match(new RegExp('(?:^|; )' + escaped + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : '';
     }
 }
 
