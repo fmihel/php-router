@@ -15,7 +15,7 @@ try {
 
     if (router::enable()) {
 
-        throw new \Exception('custom error');
+        // throw new \Exception('custom error');
         session::autorizeByToken(input::token());
 
         $module = router::module([__DIR__]);
@@ -26,11 +26,11 @@ try {
 
     }
 } catch (TokenException $e) {
-    response::error($e, 401);
+    response::error($e, response::HTTP_UNAUTORIZED_401);
 } catch (AccessDenied $e) {
-    response::error($e, 401);
+    response::error($e, response::HTTP_UNAUTORIZED_401);
 } catch (ModuleIsNotDefined $e) {
-    response::error($e, 404);
+    response::error($e, response::HTTP_NOT_FOUND_404);
 } catch (\Exception $e) {
 
     console::log($e);

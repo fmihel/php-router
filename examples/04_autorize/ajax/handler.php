@@ -8,4 +8,7 @@ $data = input::data('text');
 
 console::log($data);
 
-response::data(['handler response']);
+response::data([
+    'state' => 1,
+    'handler response',
+]);

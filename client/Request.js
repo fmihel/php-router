@@ -109,6 +109,7 @@ class Request {
             let e = {
                 error,
                 url,
+                to,
                 sendingData: data,
                 status,
                 ...params,

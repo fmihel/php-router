@@ -10,19 +10,19 @@ class Session {
         };
         this._prevEvent = null;
 
-        this.request.addInterceptor((state, config) => {
-            if (state === 'before') {
+        this.request.addInterceptor((ev, config) => {
+            if (ev === 'before') {
                 if (!config?.skipAuth && this?.data?.token) {
                     config.headers.Authorization = `Bearer ${this.data.token}`;
                 }
             }
 
-            if (state === 'after') {
+            if (ev === 'after') {
                 if (config.status == 401) {
                     this.logout();
                 }
             }
-            if (state === 'error') {
+            if (ev === 'error') {
                 if (config.status == 401) {
                     this.logout();
                 }

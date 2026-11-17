@@ -7,42 +7,51 @@ class response
     const HTML_SEND_USE_SCRIPT = 0;
     const HTML_SEND_USE_SERVER = 1;
 
-    public static function data(array $data, $code = -1)
+    const HTTP_OK_200                    = 200; // все ок
+    const HTTP_BAD_REQUEST               = 400; // пришли неправильные данные
+    const HTTP_UNAUTORIZED_401           = 401; // нужна авторизация
+    const HTTP_NOT_FOUND_404             = 404; // не найдено
+    const HTTP_INTERBAL_SERVER_ERROR_500 = 500; // ошибка на сервере
+
+    public static function data(array $data, $code = self::HTTP_OK_200)
     {
         header("Content-Type: application/json; charset=UTF-8");
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Headers: Authorization, Content-Type");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
-        if ($code > 0) {
+        if ($code != 200) {
             http_response_code($code);
         }
+
         echo json_encode($data);
         exit();
     }
-    public static function error($e, $code = -1)
+
+    public static function error($e, $code = self::HTTP_INTERBAL_SERVER_ERROR_500)
     {
-        $out = [
-            'success' => 0,
-            'message' => '',
-        ];
         if (is_a($e, '\Exception')) {
-            $out['message'] = $e->getMessage();
+            $message = $e->getMessage();
         } else {
-            $out['message'] = "$e";
+            $message = "$e";
         }
-        self::data($out, $code);
-    }
-    public static function success($payload, $code = -1)
-    {
         self::data([
-            'success' => 1,
-            'payload' => $payload,
+            'success' => false,
+            'message' => $message,
         ], $code);
     }
-    public static function ok($payload = '', $code = -1)
+
+    public static function success($payload = [])
     {
-        self::success($payload, $code);
+        self::data([
+            'success' => true,
+            'payload' => $payload,
+        ], 200);
+    }
+
+    public static function ok($payload = '')
+    {
+        self::success($payload);
     }
 
     public static function html(string $file, int $sendType = self::HTML_SEND_USE_SCRIPT)
