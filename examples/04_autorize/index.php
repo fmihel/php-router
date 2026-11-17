@@ -15,6 +15,7 @@ try {
 
     if (router::enable()) {
 
+        throw new \Exception('custom error');
         session::autorizeByToken(input::token());
 
         $module = router::module([__DIR__]);
