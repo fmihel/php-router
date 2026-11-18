@@ -14,19 +14,18 @@
         textarea {
             min-height: 200px;
         }
-        hr{
+        hr {
             color: rgba(177, 133, 133, 0);
             border-color: rgb(95, 95, 95);
-            background-color: rgba(0,0,0,0);
+            background-color: rgba(0, 0, 0, 0);
         }
-        pre{
-            color:white;
-            margin:0;
-            margin-bottom:1rem;
-            padding:0;
-            border:1px solid rgb(95, 95, 95);
+        pre {
+            color: white;
+            margin: 0;
+            margin-bottom: 1rem;
+            padding: 0;
+            border: 1px solid rgb(95, 95, 95);
             background-color: #151717;
-
         }
     </style>
     <body>
@@ -38,9 +37,9 @@
         <textarea id="status" value="..."></textarea>
 
         <div>
-            <hr/>
-            Включение режима storage (хранение в localStorage)<br/>
-            <br/>
+            <hr />
+            Включение режима storage (хранение в localStorage)<br />
+            <br />
             config.php:
             <pre><code>
     corsCredentials = false
@@ -54,9 +53,9 @@
     });
         </code></pre>
 
-            <hr/>
-            Включение режима httpOnly (хранение cookie на сервере)<br/>
-            <br/>
+            <hr />
+            Включение режима httpOnly (хранение cookie на сервере)<br />
+            <br />
             config.php:
             <pre><code>
     corsCredentials = true
@@ -69,12 +68,26 @@
         storage:'local' // 'session'
     })
         </code></pre>
-
-
         </div>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.8.4/dist/browsers/libsodium-wrappers.min.js"></script> -->
+
         <script type="module">
             import { Request } from './../../client/Request.js';
             import { Session } from './../../client/Session.js';
+            import _sodium from 'https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.8.4/dist/browser/libsodium-wrappers.min.js';
+
+            async function test_sodium() {
+                await _sodium.ready; // Ожидание готовности библиотеки
+                console.log({ ready: _sodium });
+                // Пример генерации ключа
+                let key = _sodium.crypto_secretbox_keygen();
+                console.log({key});
+            }
+
+            setTimeout(() => {
+                console.log('test sodium');
+                test_sodium();
+            }, 3000);
 
             const request = new Request();
             // Режим хранения токена:

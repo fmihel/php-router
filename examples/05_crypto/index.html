@@ -1,0 +1,156 @@
+<html>
+    <style>
+        body {
+            background-color: #212728;
+            color: limegreen;
+            padding: 2rem;
+        }
+        input,
+        textarea {
+            display: block;
+            margin-bottom: 0.5rem;
+            min-width: 15rem;
+        }
+        textarea {
+            min-height: 200px;
+        }
+        hr{
+            color: rgba(177, 133, 133, 0);
+            border-color: rgb(95, 95, 95);
+            background-color: rgba(0,0,0,0);
+        }
+        pre{
+            color:white;
+            margin:0;
+            margin-bottom:1rem;
+            padding:0;
+            border:1px solid rgb(95, 95, 95);
+            background-color: #151717;
+
+        }
+    </style>
+    <body>
+        <h2>05_crypto</h2>
+
+        <input id="btn_authorize" type="button" value="authorize" />
+        <input id="btn_logout" type="button" value="logout" />
+        <input id="send" type="button" value="send data" />
+        <textarea id="status" value="..."></textarea>
+
+        <div>
+            <hr/>
+            Включение режима storage (хранение в localStorage)<br/>
+            <br/>
+            config.php:
+            <pre><code>
+    corsCredentials = false
+    tokenMode = 'header'
+            </code></pre>
+            в JS:
+            <pre><code>
+    const session = new Session(request,{
+            mode:'local',
+            storage:'local'// session
+    });
+        </code></pre>
+
+            <hr/>
+            Включение режима httpOnly (хранение cookie на сервере)<br/>
+            <br/>
+            config.php:
+            <pre><code>
+    corsCredentials = true
+    tokenMode = 'cookie'
+            </code></pre>
+            в JS:
+            <pre><code>
+    const session = new Session(request,{
+        mode:'cookie',
+        storage:'local' // 'session'
+    })
+        </code></pre>
+
+
+        </div>
+        <script type="module">
+            import { Request } from './../../client/Request.js';
+            import { Session } from './../../client/Session.js';
+
+            const request = new Request();
+            // Режим хранения токена:
+            //   mode: 'local'  — Bearer-токен, хранится в localStorage/sessionStorage;
+            //   mode: 'cookie' — httpOnly-cookie на сервере + CSRF-заголовок (XSS-безопаснее).
+            // Должен совпадать с session::$tokenMode в config.php.
+            const session = new Session(request, {
+                // mode: 'local', // поменяйте на 'cookie' вместе с config.php
+                mode: 'cookie', // поменяйте на 'cookie' вместе с config.php
+                storage: 'local', // 'local' | 'session'
+            });
+
+            const $btn_authorize = document.getElementById('btn_authorize');
+            const $btn_logout = document.getElementById('btn_logout');
+            const $send = document.getElementById('send');
+            const $status = document.getElementById('status');
+
+            function msg(str) {
+                $status.value += ($status.value ? '\n' : '') + `${str}`;
+                $status.scrollTop = $status.scrollHeight;
+            }
+
+            function authorize() {
+                session
+                    .authorizeByLogin('1', '1')
+                    .then((o) => {
+                        msg('authorize :ok.');
+                        console.log(o);
+                    })
+                    .catch((e) => {
+                        msg('authorize :error!');
+                        console.log(e);
+                    });
+            }
+
+            function logout() {
+                msg('logout');
+                session.logout();
+            }
+
+            function send() {
+                request
+                    .send({
+                        to: 'ajax/handler',
+                        data: { text: 'test3' },
+                    })
+                    .then((o) => {
+                        msg(o.data[0]);
+                        console.log(o);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            }
+
+            session
+                .authorizeByToken()
+                .then((o) => {
+                    msg('auto authorize :ok.');
+                    console.log(o);
+                })
+                .catch((e) => {
+                    msg('auto authorize :error!');
+                    console.log(e);
+                });
+
+            session.on('authorize', () => {
+                console.log('on authorize');
+            });
+            session.on('logout', () => {
+                console.log('on logout');
+            });
+
+            $btn_authorize.addEventListener('click', authorize);
+            $btn_logout.addEventListener('click', logout);
+            $send.addEventListener('click', send);
+        </script>
+    </body>
+</html>

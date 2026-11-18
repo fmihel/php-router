@@ -61,12 +61,6 @@ class session
         return self::$tokenMode === 'cookie';
     }
 
-    /** Токен, который нужно вернуть клиенту (в cookie-режиме не отдаётся). */
-    public static function tokenForClient(): ?string
-    {
-        return self::isCookieMode() ? null : (self::$token ?: null);
-    }
-
     public static function authorizeByLogin(string $login, string $password)
     {
         self::reset();
@@ -150,8 +144,14 @@ class session
         }
     }
 
+    /** Токен, который нужно вернуть клиенту (в cookie-режиме не отдаётся). */
+    protected static function tokenForClient(): ?string
+    {
+        return self::isCookieMode() ? null : (self::$token ?: null);
+    }
+
     /** Проверка CSRF (double-submit cookie) для cookie-режима. */
-    public static function assertCsrf(): void
+    private static function assertCsrf(): void
     {
         if (! self::isCookieMode()) {
             return;
