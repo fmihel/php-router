@@ -14,9 +14,19 @@
         textarea {
             min-height: 200px;
         }
+        hr{
+            color: rgba(177, 133, 133, 0);
+            border-color: rgb(95, 95, 95);
+            background-color: rgba(0,0,0,0);
+        }
         pre{
-            text-align: left;
-            white-space: pre-wrap;
+            color:white;
+            margin:0;
+            margin-bottom:1rem;
+            padding:0;
+            border:1px solid rgb(95, 95, 95);
+            background-color: #151717;
+
         }
     </style>
     <body>
@@ -31,25 +41,34 @@
             <hr/>
             Включение режима storage (хранение в localStorage)<br/>
             <br/>
-            config.php:<br/>
-            - corsCredentials = false<br/>
-            - tokenMode = 'header'<br/>
-            в JS:<br/>
-            const session = new Session(request,{<br/>
-                mode:'local',<br/>
-                storage:'local' // 'session'<br/> 
-            })<br/><br/><br/>
+            config.php:
+            <pre><code>
+    corsCredentials = false
+    tokenMode = 'header'
+            </code></pre>
+            в JS:
+            <pre><code>
+    const session = new Session(request,{
+            mode:'local',
+            storage:'local'// session
+    });
+        </code></pre>
+
             <hr/>
             Включение режима httpOnly (хранение cookie на сервере)<br/>
             <br/>
-            config.php:<br/>
-            - corsCredentials = true<br/>
-            - tokenMode = 'cookie'<br/>
-            в JS:<br/>
-            const session = new Session(request,{<br/>
-                mode:'cookie',<br/>
-                storage:'local' // 'session'<br/> 
-            })<br/><br/><br/>
+            config.php:
+            <pre><code>
+    corsCredentials = true
+    tokenMode = 'cookie'
+            </code></pre>
+            в JS:
+            <pre><code>
+    const session = new Session(request,{
+        mode:'cookie',
+        storage:'local' // 'session'
+    })
+        </code></pre>
 
 
         </div>
