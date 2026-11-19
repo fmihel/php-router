@@ -1,65 +1,74 @@
 <html>
-    <style>
-        body {
-            background-color: #212728;
-            color: limegreen;
-            padding: 2rem;
+<style>
+    body {
+        background-color: #212728;
+        color: limegreen;
+        padding: 2rem;
+    }
+    a {
+        color: limegreen;
+    }
+
+</style>
+
+<body>
+    <h2><a id="link-root" href="..">examples<a> / 03_routing</h2>
+
+    <input id="send1" type="button" value="send1.." />
+    <input id="send2" type="button" value="send2.." />
+    <input id="send3" type="button" value="send3.." />
+
+    <script type="module">
+        import { Request } from './../../client/Request.js';
+        const request = new Request();
+
+        const $send1 = document.getElementById('send1');
+        const $send2 = document.getElementById('send2');
+        const $send3 = document.getElementById('send3');
+        const $linkRoot = document.getElementById('link-root');
+        $linkRoot.href = window.location.origin + '/examples.html';
+
+        function send1() {
+            request
+                .send({
+                    to: 'ajax/handler1',
+                    data: { text: 'test1' },
+                })
+                .then((o) => {
+                    console.log(o);
+                });
         }
-    </style>
-    <body>
-        <h2>03_routing</h2>
-        <input id="send1" type="button" value="send1.." />
-        <input id="send2" type="button" value="send2.." />
-        <input id="send3" type="button" value="send3.." />
 
-        <script type="module">
-            import { Request } from './../../client/Request.js';
-            const request = new Request();
+        function send2() {
+            request
+                .send({
+                    to: 'ajax/handler1',
+                    data: { text: 'test2' },
+                })
+                .then((o) => {
+                    console.log(o);
+                });
+        }
 
-            const $send1 = document.getElementById('send1');
-            const $send2 = document.getElementById('send2');
-            const $send3 = document.getElementById('send3');
+        function send3() {
+            request
+                .send({
+                    to: 'ajax/handler3',
+                    data: { text: 'test3' },
+                })
+                .then((o) => {
+                    console.log(o);
+                })
+                .catch((e) => {
+                    console.log('system error....');
+                    console.error(e);
+                });
+        }
 
-            function send1() {
-                request
-                    .send({
-                        to: 'ajax/handler1',
-                        data: { text: 'test1' },
-                    })
-                    .then((o) => {
-                        console.log(o);
-                    });
-            }
+        $send1.addEventListener('click', send1);
+        $send2.addEventListener('click', send2);
+        $send3.addEventListener('click', send3);
+    </script>
+</body>
 
-            function send2() {
-                request
-                    .send({
-                        to: 'ajax/handler1',
-                        data: { text: 'test2' },
-                    })
-                    .then((o) => {
-                        console.log(o);
-                    });
-            }
-
-            function send3() {
-                request
-                    .send({
-                        to: 'ajax/handler3',
-                        data: { text: 'test3' },
-                    })
-                    .then((o) => {
-                        console.log(o);
-                    })
-                    .catch((e) => {
-                        console.log('system error....');
-                        console.error(e);
-                    });
-            }
-
-            $send1.addEventListener('click', send1);
-            $send2.addEventListener('click', send2);
-            $send3.addEventListener('click', send3);
-        </script>
-    </body>
 </html>

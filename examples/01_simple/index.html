@@ -1,33 +1,41 @@
 <html>
-    <style>
-        body {
-            background-color: #212728;
-            color: limegreen;
-            padding: 2rem;
+<style>
+    body {
+        background-color: #212728;
+        color: limegreen;
+        padding: 2rem;
+    }
+
+    a {
+        color: limegreen;
+    }
+</style>
+
+<body>
+    <h2><a id="link-root" href="..">examples<a> / 01_simple</h2>
+    <input id="send" type="button" value="send.." />
+
+    <script type="module">
+        import { Request } from './../../client/Request.js';
+        const request = new Request();
+
+        const $send = document.getElementById('send');
+        const $linkRoot = document.getElementById('link-root');
+        $linkRoot.href = window.location.origin + '/examples.html';
+
+        function send() {
+            request
+                .send({
+                    to: 'test',
+                    data: { text: 'test' },
+                })
+                .then((o) => {
+                    console.log(o);
+                });
         }
-    </style>
-    <body>
-        <h2>01_simple</h2>
-        <input id="send" type="button" value="send.." />
 
-        <script type="module">
-            import { Request } from './../../client/Request.js';
-            const request = new Request();
+        $send.addEventListener('click', send);
+    </script>
+</body>
 
-            const $send = document.getElementById('send');
-
-            function send() {
-                request
-                    .send({
-                        to: 'test',
-                        data: { text: 'test' },
-                    })
-                    .then((o) => {
-                        console.log(o);
-                    });
-            }
-
-            $send.addEventListener('click', send);
-        </script>
-    </body>
 </html>
