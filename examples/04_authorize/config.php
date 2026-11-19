@@ -2,7 +2,7 @@
 define('CONFIG_EXCEPTION', '-exception-');
 define('config', [
     'jwt'             => [
-        'key'    => 'wefhg-23434-werf83hjjh-gwerf2', // Секретный ключ (должен быть очень сложным)
+        'key'    => 'wefhg-23434-werf83hjjh-gwerf27jjakskdlsl', // Секретный ключ (должен быть очень сложным)
         'server' => 'local',                         // Issuer: для какого сервера выпущен токен
         'expire' => 366,                             // кол-во дней жизни (кладётся в claim exp)
     ],

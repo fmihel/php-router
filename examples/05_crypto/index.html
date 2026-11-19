@@ -91,16 +91,8 @@
     <script type="module">
         import { Request } from './../../client/Request.js';
         import { Session } from './../../client/Session.js';
-        import sodium from 'libsodium-wrappers';
+        import {Crypto} from './../../client/Crypto.js';
 
-        async function test_sodium() {
-            await sodium.ready; // Ожидание готовности библиотеки
-            // Пример генерации ключа
-            let key = sodium.crypto_secretbox_keygen();
-            console.log({ key });
-        }
-
-        test_sodium();
 
         const request = new Request();
         // Режим хранения токена:
@@ -112,6 +104,8 @@
             mode: 'cookie', // поменяйте на 'cookie' вместе с config.php
             storage: 'local', // 'local' | 'session'
         });
+        
+        const crypto = new Crypto(request,session);
 
         const $btn_authorize = document.getElementById('btn_authorize');
         const $btn_logout = document.getElementById('btn_logout');
@@ -169,7 +163,7 @@
                 console.log(e);
             });
 
-        session.on('authorize', () => {
+        session.on('authorize', (o) => {
             console.log('on authorize');
         });
         session.on('logout', () => {

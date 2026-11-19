@@ -30,9 +30,9 @@ class Request {
                 // ...this.token ? { 'Authorization': `Bearer ${this.token}` } : {}
                 ...(noCache
                     ? {
-                          ['Cache-Control']: 'no-cache, no-store, must-revalidate',
-                          Pragma: 'no-cache',
-                      }
+                        ['Cache-Control']: 'no-cache, no-store, must-revalidate',
+                        Pragma: 'no-cache',
+                    }
                     : {}),
                 ...config.headers,
             },
@@ -61,13 +61,14 @@ class Request {
         }
     }
 
-    async post({ url = this.router, to = undefined, data = {}, noCache = true, ...params }) {
+    async post({ url = this.router, to = undefined, data = {}, vars = {}, noCache = true, ...params }) {
         let status = -1;
 
-        let config = { url, to, data, headers: {}, ...params };
+        let config = { url, to, data, headers: {}, vars, ...params };
         config = await this._callInterceptors('before', config);
 
-        let body = { to, data: config.data };
+        let body = { to, data: config.data, ...config.vars };
+
         const options = {
             method: 'POST',
             ...(noCache ? { cache: 'no-store' } : {}),
@@ -77,9 +78,9 @@ class Request {
                 'Content-Type': 'application/json',
                 ...(noCache
                     ? {
-                          ['Cache-Control']: 'no-cache, no-store, must-revalidate',
-                          Pragma: 'no-cache',
-                      }
+                        ['Cache-Control']: 'no-cache, no-store, must-revalidate',
+                        Pragma: 'no-cache',
+                    }
                     : {}),
                 ...config.headers,
             },
@@ -115,7 +116,7 @@ class Request {
                 sendingData: data,
                 status,
                 ...params,
-            }; 
+            };
             await this._callInterceptors('error', e);
             throw e;
         }

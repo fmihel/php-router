@@ -9,6 +9,7 @@ use fmihel\router\response;
 use fmihel\router\router;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../loader.php';
 require_once __DIR__ . '/my-session.php';
 
 // CORS: белый список или '*' задаётся в config.php

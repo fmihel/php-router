@@ -1,19 +1,20 @@
 <?php
+
 namespace fmihel\router;
 
 class crypto
 {
-    // создание 
+    // создание пары публичный и приватныц= ключ
     public static function getKeypair(string $staticKey, string $sessionKey): string
     {
         $seed = hash_hmac('sha256', $sessionKey, $staticKey, true);
         return sodium_crypto_box_seed_keypair($seed);
     }
+    
+    // поулучить публичный ключ
     public static function getPublicKey(string $keypair): string
     {
         $publicKey = sodium_crypto_box_publickey($keypair);
-        // Очищаем память от приватных данных
-        sodium_memzero($keypair);
         return base64_encode($publicKey);
     }
 

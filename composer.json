@@ -1,26 +1,6 @@
 {
-    "name": "fmihel/php-router",
-    "description": "php,router",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "fmihel",
-            "email": "fmihel76@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "fmihel\\router\\": "server"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "fmihel\\router\\test\\": "tests"
-        }
-    },
     "require": {
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^7.2"
     },
     "require-dev": {
         "fmihel/console-log": "^1.8"

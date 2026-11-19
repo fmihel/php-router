@@ -48,7 +48,7 @@ class session
     /** null — определять автоматически по HTTPS */
     public static $cookieSecure = null;
 
-    public static $token        = false;
+    protected static $token        = false;
     protected static $tokenData = [];
 
     public static function enable(): bool
@@ -207,7 +207,7 @@ class session
         }
     }
 
-    private static function tokenFromRequest(): ?string
+    public static function tokenFromRequest(): ?string
     {
         // 1. Bearer-заголовок
         $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';

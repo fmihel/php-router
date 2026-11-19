@@ -8,6 +8,8 @@ class input
     const EXCEPTION       = '-exception-';
     private static $data  = null;
     private static $route = '';
+    /** @var callable[] распаковщики, регистрируются снаружи */
+    private static $unpackers = [];
 
     public static function data($name = '', $default = self::EXCEPTION)
     {
@@ -77,12 +79,37 @@ class input
     }
     private static function loadData()
     {
-        if (self::$data === null) {
-            $data        = json_decode(file_get_contents("php://input"), true);
-            self::$data  = $data['data'] ?? [];
-            self::$route = $data['to'] ?? false;
+        if (self::$data !== null) {
+            return;
         }
 
-    }
+        $envelope = json_decode(file_get_contents('php://input'), true);
+        if (! is_array($envelope)) {
+            $envelope = [];
+        }
 
+        self::$route = $envelope['to'] ?? false;
+        $raw         = $envelope['data'] ?? [];
+
+        self::$data = self::unpack($raw, $envelope);
+    }
+    
+    /** Регистрирует распаковщик. Контракт: (mixed $raw, array $envelope) => mixed|null
+     *  null  — «не мой» payload, передать следующему;
+     *  иначе — уже расшифрованные данные. */
+    public static function addUnpacker(callable $fn): void
+    {
+        self::$unpackers[] = $fn;
+    }
+    
+    private static function unpack($raw, array $envelope)
+    {
+        foreach (self::$unpackers as $fn) {
+            $res = $fn($raw, $envelope);
+            if ($res !== null) {
+                return $res;
+            }
+        }
+        return $raw;   // ничего не распаковали — данные как есть
+    }
 }
