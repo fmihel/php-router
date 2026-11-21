@@ -103,6 +103,7 @@ class Request {
                     ...params,
                 };
 
+
                 out = await this._callInterceptors('after', out);
                 return out;
             } else {

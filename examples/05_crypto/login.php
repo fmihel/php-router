@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../loader.php';
 require_once __DIR__ . '/my-session.php';
 
 use fmihel\console;
@@ -43,11 +42,11 @@ try {
     response::success(session::clientTokenInfo($cryptoKey));
 
 } catch (AccessDenied $e) {
-    response::error($e, 401);
+    response::error(response::HTTP_UNAUTHORIZED_401);
 } catch (NotConfigured $e) {
     console::log($e);
-    response::error($e, 500);
+    response::error(response::HTTP_UNAUTHORIZED_401);
 } catch (\Exception $e) {
     console::log($e);
-    response::error($e, 401);
+    response::error(response::HTTP_UNAUTHORIZED_401);
 }

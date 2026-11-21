@@ -1,8 +1,6 @@
 <?php
 namespace fmihel\router;
 
-use fmihel\router\exceptions\TokenException;
-
 class input
 {
     const EXCEPTION                    = '-exception-';
@@ -41,19 +39,6 @@ class input
                 return $default;
             }
         }
-    }
-
-    public static function token(): string
-    {
-        $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? getallheaders()['Authorization'] ?? getallheaders()['authorization'] ?? null;
-        if (! $auth_header || ! preg_match('/Bearer\s(\S+)/', $auth_header, $matches)) {
-            throw new TokenException('no token in header');
-
-            // http_response_code(401);
-            // echo json_encode(["success" => false, "message" => "Доступ запрещен. Токен отсутствует или некорректен."]);
-            // exit();
-        }
-        return $matches[1];
     }
 
     public static function route(): string

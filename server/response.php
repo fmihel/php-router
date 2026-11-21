@@ -9,11 +9,19 @@ class response
 
     const HTTP_OK_200                    = 200; // все ок
     const HTTP_NO_CONTENT_204            = 204; // запрос успешный, но в теле нет контента
-    const HTTP_BAD_REQUEST               = 400; // пришли неправильные данные
+    const HTTP_BAD_REQUEST_400           = 400; // пришли неправильные данные
     const HTTP_UNAUTHORIZED_401          = 401; // нужна авторизация
     const HTTP_NOT_FOUND_404             = 404; // не найдено
     const HTTP_INTERNAL_SERVER_ERROR_500 = 500; // ошибка на сервере
 
+    const HTTP_CODE_STR = [
+        self::HTTP_OK_200                    => '200: ok',
+        self::HTTP_NO_CONTENT_204            => '204: запрос успешный, но в теле нет контента',
+        self::HTTP_BAD_REQUEST_400           => '400: пришли неправильные данные',
+        self::HTTP_UNAUTHORIZED_401          => '401: нужна авторизация',
+        self::HTTP_NOT_FOUND_404             => '404: не найдено',
+        self::HTTP_INTERNAL_SERVER_ERROR_500 => '500: ошибка на сервере',
+    ];
     /**
      * Настройка CORS.
      *  - $corsOrigins === '*'                    — разрешить любой origin;
@@ -82,13 +90,10 @@ class response
         exit();
     }
 
-    public static function error($e, $code = self::HTTP_INTERNAL_SERVER_ERROR_500)
+    public static function error($code = self::HTTP_INTERNAL_SERVER_ERROR_500)
     {
-        if ($e instanceof \Exception) {
-            $message = $e->getMessage();
-        } else {
-            $message = "$e";
-        }
+        $message = self::HTTP_CODE_STR[$code] ?? "$code: внутренняя ошибка";
+
         self::data([
             'success' => false,
             'message' => $message,

@@ -1,16 +1,15 @@
 <?php
 
 use fmihel\console;
+use fmihel\router\crypto\define;
 use fmihel\router\exceptions\AccessDenied;
 use fmihel\router\exceptions\InvalidRoute;
 use fmihel\router\exceptions\ModuleIsNotDefined;
 use fmihel\router\exceptions\NotConfigured;
 use fmihel\router\response;
 use fmihel\router\router;
-use function fmihel\router\crypto\defineCryptoUnpacker;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../loader.php';
 require_once __DIR__ . '/my-session.php';
 
 // CORS: белый список или '*' задаётся в config.php
@@ -24,7 +23,12 @@ try {
 
     if (router::enable()) {
 
-        defineCryptoUnpacker(config['crypto']['key']);
+        define::cryptoUnpacker(function () {
+            return [
+                config['crypto']['key'],
+                session::tokenFromRequest(),
+            ];
+        });
 
         // Авторизация из запроса: Bearer-заголовок или httpOnly-cookie (+ CSRF)
         session::authorizeFromRequest();
@@ -37,16 +41,17 @@ try {
 
     }
 } catch (AccessDenied $e) {
-    response::error($e, response::HTTP_UNAUTHORIZED_401);
+    response::error(response::HTTP_UNAUTHORIZED_401);
 } catch (InvalidRoute $e) {
-    response::error($e, response::HTTP_NOT_FOUND_404);
+    console::log($e);
+    response::error(response::HTTP_NOT_FOUND_404);
 } catch (ModuleIsNotDefined $e) {
-    response::error($e, response::HTTP_NOT_FOUND_404);
+    console::log($e);
+    response::error(response::HTTP_NOT_FOUND_404);
 } catch (NotConfigured $e) {
     console::log($e);
-    response::error($e, response::HTTP_INTERNAL_SERVER_ERROR_500);
+    response::error(response::HTTP_INTERNAL_SERVER_ERROR_500);
 } catch (\Exception $e) {
-
     console::log($e);
-    response::error($e);
+    response::error(response::HTTP_INTERNAL_SERVER_ERROR_500);
 }

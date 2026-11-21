@@ -48,8 +48,10 @@ class session
     /** null — определять автоматически по HTTPS */
     public static $cookieSecure = null;
 
-    protected static $token        = false;
+    protected static $token     = false;
     protected static $tokenData = [];
+
+    private static $_loading_token = false;
 
     public static function enable(): bool
     {
@@ -127,12 +129,12 @@ class session
     {
         self::assertCsrf();
 
-        $token = self::tokenFromRequest();
-        if (! $token) {
+        self::tokenFromRequest();
+        if (! self::$token) {
             throw new AccessDenied();
         }
 
-        self::authorizeByToken($token);
+        self::authorizeByToken(self::$token);
     }
 
     /** Сброс авторизации + удаление cookie (для серверного logout). */
@@ -209,22 +211,30 @@ class session
 
     public static function tokenFromRequest(): ?string
     {
+        if (self::$_loading_token) {
+            return self::$token;
+        }
+        self::$_loading_token = true;
+
         // 1. Bearer-заголовок
         $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         if ($auth === '' && function_exists('getallheaders')) {
             $headers = getallheaders();
             $auth    = $headers['Authorization'] ?? $headers['authorization'] ?? '';
         }
+
         if ($auth !== '' && preg_match('/Bearer\s+(\S+)/', $auth, $m)) {
-            return $m[1];
+            self::$token = $m[1];
+            return self::$token;
         }
 
         // 2. httpOnly-cookie (только в cookie-режиме)
         if (self::isCookieMode() && ! empty($_COOKIE[self::$cookieName])) {
-            return $_COOKIE[self::$cookieName];
+            self::$token = $_COOKIE[self::$cookieName];
+            return self::$token;
         }
 
-        return null;
+        return false;
     }
 
     private static function readHeader(string $name): string

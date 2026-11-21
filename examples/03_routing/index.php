@@ -6,7 +6,6 @@ use fmihel\router\response;
 use fmihel\router\router;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__.'/../loader.php';
 
 try {
 
@@ -20,11 +19,10 @@ try {
 
     }
 } catch (ModuleIsNotDefined $e) {
-    response::error($e, 404);
+    response::error(response::HTTP_NOT_FOUND_404);
 } catch (\Exception $e) {
-
     console::log($e);
-    response::error($e);
+    response::error();
 }
 
 response::html(__DIR__ . '/index.html');

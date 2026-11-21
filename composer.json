@@ -1,4 +1,19 @@
 {
+    "name": "fmihel/php-router",
+    "description": "php/js client server simple router",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "fmihel",
+            "email": "fmihel76@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "fmihel\\router\\": "server/"
+        }
+    },
     "require": {
         "firebase/php-jwt": "^7.2"
     },
