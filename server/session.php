@@ -75,7 +75,8 @@ class session
             self::$token     = self::createToken($tokenData);
             self::$tokenData = $tokenData;
 
-            self::issue(self::$token);
+            // Ротация CSRF-токена только при логине (refresh отсутствует)
+            self::issue(self::$token, true);
 
         } catch (\Exception $e) {
             self::reset();
@@ -113,6 +114,8 @@ class session
             self::$token     = $token;
             self::$tokenData = $unpack['data'];
 
+            // Токен уже выпущен/принят — CSRF не ротируем, иначе при
+            // параллельных запросах cookie перезапишется и проверка сломается.
             self::issue($token);
 
         } catch (\Exception $e) {
@@ -187,12 +190,21 @@ class session
         return JWT::encode($payload, self::$key, 'HS256');
     }
 
-    /** Сохраняет выпущенный/принятый токен согласно выбранному режиму. */
-    private static function issue(string $token): void
+    /**
+     * Сохраняет выпущенный/принятый токен согласно выбранному режиму.
+     *
+     * @param bool $rotateCsrf ротировать CSRF-cookie. Делается только при логине:
+     *                         регенерация на каждом запросе ломает параллельные
+     *                         запросы (клиент держит старый токен в заголовке,
+     *                         пока cookie уже перезаписана).
+     */
+    private static function issue(string $token, bool $rotateCsrf = false): void
     {
         if (self::isCookieMode()) {
             self::setTokenCookie($token);
-            self::rotateCsrfCookie();
+            if ($rotateCsrf) {
+                self::rotateCsrfCookie();
+            }
         }
     }
 
