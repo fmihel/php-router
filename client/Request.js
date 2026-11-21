@@ -61,10 +61,17 @@ class Request {
         }
     }
 
-    async post({ url = this.router, to = undefined, data = {}, vars = {}, noCache = true, ...params }) {
+    async post({
+        url = this.router,
+        to = undefined,
+        data = {},
+        vars = {},
+        headers = {},
+        noCache = true,
+        ...params }) {
         let status = -1;
 
-        let config = { url, to, data, headers: {}, vars, ...params };
+        let config = { url, to, data, headers, vars, ...params };
         config = await this._callInterceptors('before', config);
 
         let body = { to, data: config.data, ...config.vars };
