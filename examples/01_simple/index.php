@@ -5,11 +5,16 @@ use fmihel\router\router;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-if (router::enable()) {
+response::preflight();
 
-    $module = router::module([__DIR__]);
-    require_once $module;
+try {
 
+    if (router::enable()) {
+
+        $module = router::module([__DIR__]);
+        require_once $module;
+    }
+
+} catch (\Throwable $th) {
+    response::error();
 }
-
-response::html(__DIR__ . '/index.html');

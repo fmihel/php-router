@@ -7,6 +7,8 @@ use fmihel\router\router;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+response::preflight();
+
 try {
 
     if (router::enable()) {
@@ -22,7 +24,5 @@ try {
     response::error(response::HTTP_NOT_FOUND_404);
 } catch (\Exception $e) {
     console::log($e);
-    response::error();
+    response::error(response::HTTP_INTERNAL_SERVER_ERROR_500);
 }
-
-response::html(__DIR__ . '/index.html');
