@@ -1,6 +1,10 @@
 <?php
 namespace fmihel\router;
 
+require_once __DIR__ . '/exceptions/NotConfigured.php';
+
+use fmihel\router\exceptions\NotConfigured;
+
 class response
 {
     const EXCEPTION            = '-exception-';
@@ -44,15 +48,21 @@ class response
     {
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-        if (self::$corsOrigins === '*') {
-            // С credentials браузер запрещает '*' — отражаем конкретный origin
-            if (self::$corsCredentials && $origin !== '') {
-                header('Access-Control-Allow-Origin: ' . $origin);
-                header('Vary: Origin');
-            } else {
-                header('Access-Control-Allow-Origin: *');
-            }
+        $wildcard = self::$corsOrigins === '*';
+
+        // Дикая маска несовместима с credentials: браузер отклонит ответ,
+        // а отражение произвольного Origin фактически разрешило бы любому
+        // сайту слать запросы с cookie. Требуем явный белый список — fail closed.
+        if ($wildcard && self::$corsCredentials) {
+            throw new NotConfigured(
+                'CORS: $corsCredentials=true требует явный белый список в $corsOrigins (нельзя использовать "*")'
+            );
+        }
+
+        if ($wildcard) {
+            header('Access-Control-Allow-Origin: *');
         } else {
+            // Белый список: отражаем Origin только если он разрешён.
             $allowed = is_array(self::$corsOrigins) ? self::$corsOrigins : [self::$corsOrigins];
             header('Vary: Origin');
             if ($origin !== '' && in_array($origin, $allowed, true)) {
