@@ -1,5 +1,4 @@
 <?php
-
 namespace fmihel\router;
 
 class crypto
@@ -10,7 +9,7 @@ class crypto
         $seed = hash_hmac('sha256', $sessionKey, $staticKey, true);
         return sodium_crypto_box_seed_keypair($seed);
     }
-    
+
     // поулучить публичный ключ
     public static function getPublicKey(string $keypair): string
     {
@@ -37,4 +36,5 @@ class crypto
 
         return $decrypted;
     }
+
 }

@@ -1,14 +1,15 @@
 <?php
 
 $paths = [
-    __DIR__.'/../server/utils',
-    __DIR__.'/../server/exceptions/',
-    __DIR__.'/../server',
+    __DIR__ . '/../server/utils',
+    __DIR__ . '/../server/exceptions/',
+    __DIR__ . '/../server/crypto/',
+    __DIR__ . '/../server',
 ];
 
-foreach($paths as $path){
+foreach ($paths as $path) {
     $modules = glob($path . '/*.php');
-    foreach($modules as $module){
+    foreach ($modules as $module) {
         require_once $module;
     }
 }

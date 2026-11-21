@@ -5,28 +5,33 @@ use fmihel\router\exceptions\TokenException;
 
 class input
 {
-    const EXCEPTION       = '-exception-';
-    private static $data  = null;
-    private static $route = '';
-    /** @var callable[] распаковщики, регистрируются снаружи */
-    private static $unpackers = [];
+    const EXCEPTION                    = '-exception-';
+    private static $_data              = null;
+    private static $_data_is_ready     = false;
+    private static $_route             = null;
+    private static $_route_is_ready    = false;
+    private static $_envelope          = null;
+    private static $_envelope_is_ready = false;
+
+    /** @var callable распаковщик, регистрируются снаружи */
+    private static $_unpacker = null;
 
     public static function data($name = '', $default = self::EXCEPTION)
     {
         try {
 
-            self::loadData();
+            $data = self::getEnv('data');
 
             if (empty($name)) {
-                return self::$data;
+                return $data;
             }
 
-            if (! isset(self::$data[$name])) {
+            if (! isset($data[$name])) {
 
                 throw new \Exception("$name is not defined");
             }
 
-            return self::$data[$name];
+            return $data[$name];
 
         } catch (\Exception $e) {
 
@@ -53,8 +58,7 @@ class input
 
     public static function route(): string
     {
-        self::loadData();
-        return self::$route;
+        return self::getEnv('route');
     }
 
     public static function getHeaderVar(string $name, $default = self::EXCEPTION): string
@@ -77,39 +81,61 @@ class input
         }
         return $default;
     }
-    private static function loadData()
+
+    private static function _load_env_route()
     {
-        if (self::$data !== null) {
-            return;
+        if (! self::$_route_is_ready) {
+            self::$_route_is_ready = true;
+            self::$_route          = self::$_envelope['to'] ?? '';
+        }
+    }
+
+    private static function _load_env_data()
+    {
+        if (! self::$_data_is_ready) {
+            self::$_data_is_ready = true;
+            $raw                  = self::$_envelope['data'] ?? [];
+            self::$_data          = self::unpack($raw, self::$_envelope);
+        }
+    }
+
+    private static function getEnv(string $name, $default = self::EXCEPTION)
+    {
+        if (! self::$_envelope_is_ready) {
+            self::$_envelope_is_ready = true;
+            $decoded                  = json_decode(file_get_contents('php://input'), true);
+            self::$_envelope          = is_array($decoded) ? $decoded : [];
         }
 
-        $envelope = json_decode(file_get_contents('php://input'), true);
-        if (! is_array($envelope)) {
-            $envelope = [];
+        if ($name === 'route') {
+            self::_load_env_route();
+            return self::$_route;
         }
 
-        self::$route = $envelope['to'] ?? false;
-        $raw         = $envelope['data'] ?? [];
+        if ($name === 'data') {
+            self::_load_env_data();
+            return self::$_data;
+        }
 
-        self::$data = self::unpack($raw, $envelope);
+        if ($default === self::EXCEPTION) {
+            throw new \Exception("$name is not defined");
+        }
+
+        return $default;
     }
-    
-    /** Регистрирует распаковщик. Контракт: (mixed $raw, array $envelope) => mixed|null
-     *  null  — «не мой» payload, передать следующему;
-     *  иначе — уже расшифрованные данные. */
-    public static function addUnpacker(callable $fn): void
+
+    /** Уастанвливает распаковщик. Контракт: (mixed $raw, array $envelope) => mixed|null */
+    public static function setUnpacker(callable $fn): void
     {
-        self::$unpackers[] = $fn;
+        self::$_unpacker = $fn;
     }
-    
+
     private static function unpack($raw, array $envelope)
     {
-        foreach (self::$unpackers as $fn) {
-            $res = $fn($raw, $envelope);
-            if ($res !== null) {
-                return $res;
-            }
+        if (self::$_unpacker === null) {
+            return $raw;
         }
-        return $raw;   // ничего не распаковали — данные как есть
+        $res = (self::$_unpacker)($raw, $envelope);
+        return $res === null ? $raw : $res;
     }
 }

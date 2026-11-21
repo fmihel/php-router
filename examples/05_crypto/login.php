@@ -1,18 +1,16 @@
 <?php
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__.'/../loader.php';
+require_once __DIR__ . '/../loader.php';
 require_once __DIR__ . '/my-session.php';
-
 
 use fmihel\console;
 use fmihel\router\exceptions\AccessDenied;
 use fmihel\router\exceptions\NotConfigured;
 use fmihel\router\input;
 use fmihel\router\response;
-use fmihel\router\crypto;
 
-$cryptoKey = config['cryptoKey'];
+$cryptoKey = config['crypto']['key'];
 
 // CORS: белый список или '*' задаётся в config.php
 response::$corsOrigins     = config['cors'] ?? '*';
@@ -33,7 +31,6 @@ try {
     $pass  = input::data('password', false);
     $token = input::data('token', false);
 
-
     if ($login && $pass) {
         session::authorizeByLogin($login, $pass);
     } elseif ($token) {
@@ -42,7 +39,6 @@ try {
         // cookie-режим: токен приходит в httpOnly-cookie (или Bearer-заголовке)
         session::authorizeFromRequest();
     }
-
 
     response::success(session::clientTokenInfo($cryptoKey));
 

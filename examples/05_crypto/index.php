@@ -7,15 +7,11 @@ use fmihel\router\exceptions\ModuleIsNotDefined;
 use fmihel\router\exceptions\NotConfigured;
 use fmihel\router\response;
 use fmihel\router\router;
-use fmihel\router\input;
-use fmihel\router\crypto;
-
+use function fmihel\router\crypto\defineCryptoUnpacker;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__.'/../loader.php';
+require_once __DIR__ . '/../loader.php';
 require_once __DIR__ . '/my-session.php';
-
-
 
 // CORS: белый список или '*' задаётся в config.php
 response::$corsOrigins     = config['cors'] ?? '*';
@@ -26,30 +22,9 @@ response::preflight();
 
 try {
 
-    input::addUnpacker(function ($raw, array $envelope) {
-        if (empty($envelope['enc'])) {
-            return null;                       // не шифровано — не наше
-        }
-        if (! is_string($raw)) {
-            return null;
-        }
-
-        $token = session::tokenFromRequest();  // работает ДО authorizeFromRequest()
-        if (! $token) {
-            throw new AccessDenied('encrypted payload without token');
-        }
-
-        $keypair = crypto::getKeypair(config['cryptoKey'], $token);
-        $plain   = crypto::decrypt($raw, $keypair);
-
-        $decoded = json_decode($plain, true);
-        if (! is_array($decoded)) {
-            throw new \Exception('bad encrypted payload');
-        }
-        return $decoded;
-    });
-
     if (router::enable()) {
+
+        defineCryptoUnpacker(config['crypto']['key']);
 
         // Авторизация из запроса: Bearer-заголовок или httpOnly-cookie (+ CSRF)
         session::authorizeFromRequest();
