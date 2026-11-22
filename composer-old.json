@@ -1,0 +1,32 @@
+{
+    "name": "fmihel/php-router",
+    "description": "php/js client server simple router",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "fmihel",
+            "email": "fmihel76@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "fmihel\\router\\": "server/"
+        }
+    },
+    "require": {
+        "firebase/php-jwt": "^6.10"
+    },
+    "require-dev": {
+        "fmihel/console-log": "^1.8"
+    },
+    "config": {
+        "policy": {
+            "advisories": {
+                "ignore-id": {
+                    "PKSA-y2cr-5h3j-g3ys": "Требуется для поддержки PHP 7.4; используются надежные ключи"
+                }
+            }
+        }
+    }
+}
