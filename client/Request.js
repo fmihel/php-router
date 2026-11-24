@@ -1,7 +1,7 @@
 class Request {
     constructor() {
         this.interceptors = [];
-        this.router = './index.php';
+        this.router = './router.php';
     }
 
     async get({
@@ -18,6 +18,7 @@ class Request {
         config = await this._callInterceptors('before', config);
 
         const curl = this.prepareUrl(config.url, {
+            to,
             ...config.attrs,
             ...(noCache ? { _nc: Date.now().toString() } : {}),
         });
@@ -43,12 +44,13 @@ class Request {
             status = res.status;
 
             if (status == 200) {
-                const data = await res.json();
+                const json = await res.json();
                 const out = await this._callInterceptors('after', {
                     status,
+                    curl,
                     url,
                     attrs,
-                    data,
+                    json,
                     ...params,
                 });
                 return out;
@@ -56,7 +58,7 @@ class Request {
                 throw `status = ${status}`;
             }
         } catch (error) {
-            await this._callInterceptors('error', { error, url, attrs, status, ...params });
+            await this._callInterceptors('error', { error,curl, url, attrs, status, ...params });
             throw error;
         }
     }

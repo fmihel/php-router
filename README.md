@@ -8,79 +8,38 @@
 
 ---
 
-## 1. Краткое описание
+## 1. Установка
 
-| Слой    | Файлы                                              | Назначение                                                        |
-| ------- | -------------------------------------------------- | ----------------------------------------------------------------- |
-| Сервер  | [`server/router.php`](server/router.php)           | Собирает путь к модулю по маршруту, защищает от path traversal     |
-|   | [`server/input.php`](server/input.php)             | Читает `route` и `data` из тела запроса, поддержка распаковки      |
-|   | [`server/response.php`](server/response.php)       | JSON-ответы (`success`/`error`/`data`), CORS, preflight, HTML      |
-|   | [`server/session.php`](server/session.php)         | JWT-авторизация: Bearer-токен или httpOnly-cookie + CSRF           |
-|   | [`server/crypto.php`](server/crypto.php)           | Ключевая пара и расшифровка (libsodium sealed box)                 |
-| Клиент  | [`client/Request.js`](client/Request.js)           | `fetch`-обёртка `GET`/`POST` с перехватчиками                     |
-|   | [`client/Session.js`](client/Session.js)           | Авторизация, хранение токена, logout, события                     |
-|   | [`client/Crypto.js`](client/Crypto.js)             | Шифрование исходящих данных публичным ключом сервера              |
-
-Формат обмена (POST):
-
-```json
-{ "to": "ajax/handler", "data": { "text": "hello" } }
-```
-
-Клиент передаёт маршрут в `to`, полезную нагрузку в `data`. Сервер отвечает JSON:
-`{ "success": true, "payload": ... }` либо `{ "success": false, "message": ... }`.
-
----
-
-## 2. Установка
-
-### Серверная часть (PHP)
+### Серверная часть (PHP 7.4+)
 
 ```bash
 composer require fmihel/php-router
 ```
+!!! Для режима шифрования требуется раширение ```sodium``` !!!
 
-Требуется PHP 7.4+ с расширением `sodium` (для режима шифрования) и
-[`firebase/php-jwt`](https://github.com/firebase/php-jwt) (ставится автоматически как зависимость).
-
-> Примечание: версия `firebase/php-jwt`, зафиксированная в [`composer.json`](composer.json) (`^7.2`),
-> требует PHP 8.0. Для работы на PHP 7.4 разрешите совместимую ветку библиотеки
-> (например, `^5.5 || ^6.0`).
 
 ### Клиентская часть (JS)
 
 Клиентские модули лежат в каталоге `client/` и подключаются напрямую как ES-модули.
-Для режима шифрования нужен пакет `libsodium-wrappers`:
 
+Для режима шифрования нужен пакет `libsodium-wrappers`:
 ```bash
 npm install libsodium-wrappers
 ```
 
-Либо подключите его через import map из CDN (см. пример в [`examples/05_crypto/index.html`](examples/05_crypto/index.html)).
-
-### Запуск примеров
-
-```bash
-php -S localhost:8000
-```
-
-Затем откройте в браузере [`examples.html`](examples.html).
-
 ---
 
-## 3. Примеры использования
+## 2. Примеры использования
 
-Далее для каждого сценария показаны серверная и клиентская части.
 Полные рабочие версии — в каталоге [`examples/`](examples/).
 
-### 3.1 Пример простого роутинга
+### 2.1 Простой роутинг
 
 **Серверная часть**
 
-Точка входа `index.php` принимает запрос, находит модуль по маршруту и подключает его.
-
 ```php
 <?php
+// router.php - Точка входа принимает запрос, находит модуль по маршруту и подключает его.
 use fmihel\router\response;
 use fmihel\router\router;
 
@@ -97,15 +56,13 @@ try {
     response::error();
 }
 ```
-
-Модуль-обработчик `test.php` читает данные и отвечает:
-
 ```php
 <?php
+// test.php - Модуль-обработчик читает данные и отвечает:
 use fmihel\router\input;
 use fmihel\router\response;
 
-$data = input::data('text'); // поле data.text из тела запроса
+error_log(print_r(input::data(),true));
 
 response::ok();               // { "success": true, "payload": "" }
 ```
@@ -127,13 +84,7 @@ response::ok();               // { "success": true, "payload": "" }
 </script>
 ```
 
-- `Request.send()` по умолчанию шлёт `POST` на `./index.php` (поле `this.router`).
-- Маршрут безупречно безопасен: [`router::module()`](server/router.php:29) запрещает
-  абсолютные пути и `..`, ограничивает набор символов и проверяет, что итог лежит внутри базового каталога.
-- Если файл модуля не найден — [`ModuleIsNotDefined`](server/exceptions/ModuleIsNotDefined.php),
-  его можно поймать и вернуть 404 (см. [`examples/03_routing/index.php`](examples/03_routing/index.php)).
-
-### 3.2 Пример роутинга с авторизацией
+### 2.2 Роутинг с авторизацией
 
 Авторизация встроена в [`server/session.php`](server/session.php) и опирается на JWT.
 Поддерживаются два режима хранения токена:
@@ -165,7 +116,7 @@ define('config', [
 
 ```php
 <?php
-// my-session.php
+// my-session.php - переопределяем абстрактный класс session
 use fmihel\router\exceptions\AccessDenied;
 
 require_once __DIR__ . '/config.php';
@@ -215,12 +166,9 @@ session::$expire    = config['jwt']['expire'];
 session::$tokenMode = config['tokenMode'] ?? 'header';
 ```
 
-Точка входа защищает весь роутинг: перед подключением модуля вызывается
-[`session::authorizeFromRequest()`](server/session.php:131).
-
 ```php
 <?php
-// index.php
+// router.php - Точка входа защищает весь роутинг: перед подключением модуля вызывает session::authorizeFromRequest()
 use fmihel\router\response;
 use fmihel\router\router;
 use fmihel\router\exceptions\AccessDenied;
@@ -252,12 +200,9 @@ try {
     response::error(response::HTTP_INTERNAL_SERVER_ERROR_500);
 }
 ```
-
-Отдельный скрипт `login.php` обслуживает вход, авто-вход по токену и серверный logout:
-
 ```php
 <?php
-// login.php
+// login.php - Отдельный скрипт обслуживает вход, авто-вход по токену и серверный logout
 use fmihel\router\input;
 use fmihel\router\response;
 use fmihel\router\exceptions\AccessDenied;
@@ -467,6 +412,31 @@ try {
 (каждый следующий подписывается на перехватчики предыдущего).
 
 ---
+## 1. Краткое описание
+
+| Слой    | Файлы                                              | Назначение                                                        |
+| ------- | -------------------------------------------------- | ----------------------------------------------------------------- |
+| Сервер  | [`server/router.php`](server/router.php)           | Собирает путь к модулю по маршруту, защищает от path traversal     |
+|   | [`server/input.php`](server/input.php)             | Читает `route` и `data` из тела запроса, поддержка распаковки      |
+|   | [`server/response.php`](server/response.php)       | JSON-ответы (`success`/`error`/`data`), CORS, preflight, HTML      |
+|   | [`server/session.php`](server/session.php)         | JWT-авторизация: Bearer-токен или httpOnly-cookie + CSRF           |
+|   | [`server/crypto.php`](server/crypto.php)           | Ключевая пара и расшифровка (libsodium sealed box)                 |
+| Клиент  | [`client/Request.js`](client/Request.js)           | `fetch`-обёртка `GET`/`POST` с перехватчиками                     |
+|   | [`client/Session.js`](client/Session.js)           | Авторизация, хранение токена, logout, события                     |
+|   | [`client/Crypto.js`](client/Crypto.js)             | Шифрование исходящих данных публичным ключом сервера              |
+
+Формат обмена (POST):
+
+```json
+{ "to": "ajax/handler", "data": { "text": "hello" } }
+```
+
+Клиент передаёт маршрут в `to`, полезную нагрузку в `data`. Сервер отвечает JSON:
+`{ "success": true, "payload": ... }` либо `{ "success": false, "message": ... }`.
+
+---
+
+
 
 ## Лицензия
 

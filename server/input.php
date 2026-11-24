@@ -71,7 +71,11 @@ class input
     {
         if (! self::$_route_is_ready) {
             self::$_route_is_ready = true;
-            self::$_route          = self::$_envelope['to'] ?? '';
+            if (isset($_GET['to'])) {
+                self::$_route = $_GET['to'];
+            } else {
+                self::$_route = self::$_envelope['to'] ?? '';
+            }
         }
     }
 
@@ -80,7 +84,12 @@ class input
         if (! self::$_data_is_ready) {
             self::$_data_is_ready = true;
             $raw                  = self::$_envelope['data'] ?? [];
-            self::$_data          = self::unpack($raw, self::$_envelope);
+            $GET                  = $_GET ?? [];
+            unset($GET['to']);
+            self::$_data = array_merge(
+                $GET,
+                self::unpack($raw, self::$_envelope)
+            );
         }
     }
 
@@ -90,6 +99,7 @@ class input
             self::$_envelope_is_ready = true;
             $decoded                  = json_decode(file_get_contents('php://input'), true);
             self::$_envelope          = is_array($decoded) ? $decoded : [];
+
         }
 
         if ($name === 'route') {

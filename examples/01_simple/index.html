@@ -13,17 +13,21 @@
 
 <body>
     <h2><a id="link-root" href="..">examples<a> / 01_simple</h2>
-    <input id="send" type="button" value="send.." />
+    <input id="send" type="button" value="post.." />
+    <input id="get" type="button" value="get.." />
+    <input id="get2" type="button" value="get2.." />
 
     <script type="module">
         import { Request } from './../../client/Request.js';
         const request = new Request();
 
         const $send = document.getElementById('send');
+        const $get = document.getElementById('get');
+        const $get2 = document.getElementById('get2');
         const $linkRoot = document.getElementById('link-root');
         $linkRoot.href = window.location.origin + '/examples.html';
 
-        function send() {
+        $send.addEventListener('click',function(){
             request
                 .send({
                     to: 'test',
@@ -32,9 +36,29 @@
                 .then((o) => {
                     console.log(o);
                 });
-        }
-
-        $send.addEventListener('click', send);
+        });
+        
+        $get.addEventListener('click', function()  {
+            request
+                .get({
+                    url:window.location.origin+'/examples/01_simple/index.php',
+                    to: 'test2',
+                    attrs: { text: 'test2' },
+                })
+                .then((o) => {
+                    console.log(o);
+                });
+        });
+        $get2.addEventListener('click', function()  {
+            request
+                .get({
+                    url:window.location.origin+'/examples/01_simple/page.php',
+                    attrs: { text: {obj:'1',arr:[2,5,6]} },
+                })
+                .then((o) => {
+                    console.log(o);
+                });
+        });
     </script>
 </body>
 
