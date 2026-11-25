@@ -9,11 +9,11 @@ use fmihel\router\exceptions\NotConfigured;
 use fmihel\router\input;
 use fmihel\router\response;
 
-$cryptoKey = config['crypto']['key'];
+$cryptoKey = config['router']['crypto']['key'];
 
 // CORS: белый список или '*' задаётся в config.php
-response::$corsOrigins     = config['cors'] ?? '*';
-response::$corsCredentials = config['corsCredentials'] ?? false;
+response::$corsOrigins     = config['router']['session']['cors']['origin'] ?? '*';
+response::$corsCredentials = config['router']['session']['cors']['credentials'] ?? false;
 
 // Завершаем preflight-запрос (OPTIONS), если пришёл
 response::preflight();

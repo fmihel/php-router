@@ -1,7 +1,7 @@
 <?php
 
-use fmihel\router\exceptions\AccessDenied;
 use fmihel\router\crypto;
+use fmihel\router\exceptions\AccessDenied;
 
 require_once __DIR__ . '/config.php';
 
@@ -54,8 +54,8 @@ class session extends fmihel\router\session
     /** данные отправляемые на клиент вместе с токеном */
     public static function clientTokenInfo(string $cryptoKey): array
     {
-        $keypair = crypto::getKeypair($cryptoKey,self::$token);
-        $pub = crypto::getPublicKey($keypair);
+        $keypair = crypto::getKeypair($cryptoKey, self::$token);
+        $pub     = crypto::getPublicKey($keypair);
 
         return [
             // в cookie-режиме токен не отдаём (он в httpOnly-cookie)
@@ -67,7 +67,7 @@ class session extends fmihel\router\session
     }
 }
 
-session::$key       = config['jwt']['key'];
-session::$server    = config['jwt']['server'];
-session::$expire    = config['jwt']['expire'];
-session::$tokenMode = config['tokenMode'] ?? 'header';
+session::$key       = config['router']['session']['jwt']['key'];
+session::$server    = config['router']['session']['jwt']['server'];
+session::$expire    = config['router']['session']['jwt']['expire'];
+session::$tokenMode = config['router']['session']['tokenMode'] ?? 'header';

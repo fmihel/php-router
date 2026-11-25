@@ -13,8 +13,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/my-session.php';
 
 // CORS: белый список или '*' задаётся в config.php
-response::$corsOrigins     = config['cors'] ?? '*';
-response::$corsCredentials = config['corsCredentials'] ?? false;
+response::$corsOrigins     = config['router']['session']['cors']['origin'] ?? '*';
+response::$corsCredentials = config['router']['session']['cors']['credentials'] ?? false;
 
 // Завершаем preflight-запрос (OPTIONS), если пришёл
 response::preflight();
@@ -25,7 +25,7 @@ try {
 
         define::cryptoUnpacker(function () {
             return [
-                config['crypto']['key'],
+                config['router']['crypto']['key'],
                 session::tokenFromRequest(),
             ];
         });
