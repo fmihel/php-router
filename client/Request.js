@@ -1,7 +1,11 @@
 class Request {
-    constructor() {
+    constructor(o) {
+        const params = {
+            router: './router.php',
+            ...o,
+        };
         this.interceptors = [];
-        this.router = './router.php';
+        this.router = params.router;
     }
 
     async get({

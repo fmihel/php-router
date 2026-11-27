@@ -20,7 +20,9 @@
 
     <script type="module">
         import { Request } from './../../client/Request.js';
-        const request = new Request();
+        const request = new Request({
+            router:'./examples/03_routing/router.php'
+        });
 
         const $send1 = document.getElementById('send1');
         const $send2 = document.getElementById('send2');

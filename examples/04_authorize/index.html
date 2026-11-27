@@ -83,12 +83,15 @@
         import { Request } from './../../client/Request.js';
         import { Session } from './../../client/Session.js';
 
-        const request = new Request();
+        const request = new Request({
+            router:'./examples/04_authorize/router.php'
+        });
         // Режим хранения токена:
         //   mode: 'local'  — Bearer-токен, хранится в localStorage/sessionStorage;
         //   mode: 'cookie' — httpOnly-cookie на сервере + CSRF-заголовок (XSS-безопаснее).
         // Должен совпадать с session::$tokenMode в config.php.
         const session = new Session(request, {
+            loginScript:'./examples/04_authorize/login.php',
             // mode: 'local', // поменяйте на 'cookie' вместе с config.php
             mode: 'cookie', // поменяйте на 'cookie' вместе с config.php
             storage: 'local', // 'local' | 'session'

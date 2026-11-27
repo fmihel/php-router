@@ -17,7 +17,7 @@ class Session {
     constructor(request, options = {}) {
         this.request = request;
         this.data = null;
-        this.loginScript = options.loginScript ?? 'login.php';
+        this.loginScript = options.loginScript ?? './login.php';
         this.mode = options.mode ?? 'local';
         this.storage = options.storage ?? 'local';
         this.storageVar = options.storageVar ?? 'jwt';
