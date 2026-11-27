@@ -40,7 +40,7 @@ class response
     /** Разрешать cookie/credentials в кросс-доменных запросах (нельзя вместе с '*'). */
     public static $corsCredentials = false;
 
-    public static $corsHeaders = 'Authorization, Content-Type, X-CSRF-Token';
+    public static $corsHeaders = 'Authorization, Content-Type, X-CSRF-Token, Cache-Control, Pragma';
     public static $corsMethods = 'GET, POST, OPTIONS';
 
     /** Применить CORS-заголовки к текущему ответу. */
