@@ -1,6 +1,8 @@
 <?php
 namespace fmihel\router;
 
+use fmihel\router\exceptions\InputException;
+
 class input
 {
     const EXCEPTION                    = '-exception-';
@@ -24,21 +26,47 @@ class input
                 return $data;
             }
 
-            if (! isset($data[$name])) {
-
-                throw new \Exception("$name is not defined");
+            if (isset($data[$name])) {
+                return $data[$name];
             }
 
-            return $data[$name];
+            throw new InputException("$name is not defined");
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $th) {
 
             if ($default === self::EXCEPTION) {
-                throw $e;
+                throw $th;
             } else {
                 return $default;
             }
         }
+    }
+
+    public static function attrs($name = '', $default = self::EXCEPTION)
+    {
+        try {
+            $GET = $_GET ?? [];
+
+            if (empty($name)) {
+                return $GET;
+            }
+
+            if (isset($GET[$name])) {
+                return $GET[$name];
+
+            }
+
+            throw new InputException("$name is not GET var");
+
+        } catch (\Throwable $th) {
+
+            if ($default === self::EXCEPTION) {
+                throw $th;
+            } else {
+                return $default;
+            }
+        }
+
     }
 
     public static function route(): string
@@ -84,12 +112,7 @@ class input
         if (! self::$_data_is_ready) {
             self::$_data_is_ready = true;
             $raw                  = self::$_envelope['data'] ?? [];
-            $GET                  = $_GET ?? [];
-            unset($GET['to']);
-            self::$_data = array_merge(
-                $GET,
-                self::unpack($raw, self::$_envelope)
-            );
+            self::$_data          = self::unpack($raw, self::$_envelope);
         }
     }
 

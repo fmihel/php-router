@@ -1,5 +1,6 @@
 <?php
 
+use fmihel\console;
 use fmihel\router\response;
 use fmihel\router\router;
 
@@ -16,5 +17,6 @@ try {
     }
 
 } catch (\Throwable $th) {
+    console::log($th);
     response::error();
 }

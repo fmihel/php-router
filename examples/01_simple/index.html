@@ -30,8 +30,12 @@
         $send.addEventListener('click',function(){
             request
                 .send({
+                    url:window.location.origin+'/examples/01_simple/index.php',
                     to: 'test',
-                    data: { text: 'test' },
+                    attrs:{
+                        PP:10
+                    },
+                    data: "string",
                 })
                 .then((o) => {
                     console.log(o);

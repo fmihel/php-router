@@ -31,9 +31,9 @@ class Request {
                 // ...this.token ? { 'Authorization': `Bearer ${this.token}` } : {}
                 ...(noCache
                     ? {
-                        ['Cache-Control']: 'no-cache, no-store, must-revalidate',
-                        Pragma: 'no-cache',
-                    }
+                          ['Cache-Control']: 'no-cache, no-store, must-revalidate',
+                          Pragma: 'no-cache',
+                      }
                     : {}),
                 ...config.headers,
             },
@@ -58,7 +58,7 @@ class Request {
                 throw `status = ${status}`;
             }
         } catch (error) {
-            await this._callInterceptors('error', { error,curl, url, attrs, status, ...params });
+            await this._callInterceptors('error', { error, curl, url, attrs, status, ...params });
             throw error;
         }
     }
@@ -66,14 +66,16 @@ class Request {
     async post({
         url = this.router,
         to = undefined,
+        attrs = {},
         data = {},
         vars = {},
         headers = {},
         noCache = true,
-        ...params }) {
+        ...params
+    }) {
         let status = -1;
 
-        let config = { url, to, data, headers, vars, ...params };
+        let config = { url, to, attrs, data, headers, vars, ...params };
         config = await this._callInterceptors('before', config);
 
         let body = { to, data: config.data, ...config.vars };
@@ -87,17 +89,19 @@ class Request {
                 'Content-Type': 'application/json',
                 ...(noCache
                     ? {
-                        ['Cache-Control']: 'no-cache, no-store, must-revalidate',
-                        Pragma: 'no-cache',
-                    }
+                          ['Cache-Control']: 'no-cache, no-store, must-revalidate',
+                          Pragma: 'no-cache',
+                      }
                     : {}),
                 ...config.headers,
             },
             body: JSON.stringify(body),
         };
 
+        const curl = this.prepareUrl(config.url, { ...config.attrs });
+
         try {
-            const res = await fetch(config.url, options);
+            const res = await fetch(curl, options);
             status = res.status;
 
             if (status == 200) {
@@ -107,11 +111,11 @@ class Request {
                     status,
                     url,
                     to,
+                    attrs,
                     sendingData: data,
                     data: json,
                     ...params,
                 };
-
 
                 out = await this._callInterceptors('after', out);
                 return out;
@@ -123,6 +127,7 @@ class Request {
                 error,
                 url,
                 to,
+                attrs,
                 sendingData: data,
                 status,
                 ...params,
