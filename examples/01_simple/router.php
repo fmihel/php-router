@@ -12,7 +12,7 @@ try {
 
     if (router::enable()) {
 
-        $module = router::module([__DIR__]);
+        $module = router::module([__DIR__, 'handlers']);
         require_once $module;
     }
 
